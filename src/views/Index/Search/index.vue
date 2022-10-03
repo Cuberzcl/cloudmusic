@@ -25,9 +25,16 @@
               <td :data-songInfo="item.id" :data-index="index" class="">
                 {{ item.name }}
               </td>
-              <td class="">{{ item.ar[0].name }}</td>
-              <td class="">{{ item.al.name }}</td>
-              <td :data-songInfo="item.id" :data-index="index" class="">{{ item.dt }}</td>
+              <td class="">
+                <span v-for="(item2, index) in item.ar" :key="item2.id">
+                  <a href="javascript:;">{{ item2.name }}</a
+                  ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
+                </span>
+              </td>
+              <td>{{ item.al.name }}</td>
+              <td :data-songInfo="item.id" :data-index="index" class="">
+                {{ tranformTime(item.dt) }}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -68,6 +75,14 @@ export default {
       if (index) {
         this.currentIndex = index
       }
+    },
+    tranformTime(dt) {
+      var s = Math.floor(dt / 1000)
+      var m = Math.floor(s / 60)
+      s %= 60
+      s = s < 10 ? '0' + s : s
+      m = m < 10 ? '0' + m : m
+      return m + ':' + s
     }
   },
   watch: {

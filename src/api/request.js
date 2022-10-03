@@ -5,7 +5,7 @@ const u3 = '127.0.0.1'
 const u4 = '10.198.202.222'
 u1, u2, u3, u4
 const _request = axios.create({
-  baseURL: 'http://' + u1 + ':3000/',
+  baseURL: 'http://' + u3 + ':3000/',
   timeout: 5000
 })
 
