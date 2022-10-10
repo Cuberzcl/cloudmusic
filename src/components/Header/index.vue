@@ -98,8 +98,11 @@ export default {
   methods: {
     sendSearchInput() {
       bus.$emit('toSearch', this.searchInput)
-      this.$router.push({ name: 'search' })
-      this.$store.dispatch('getSearchRes', { searchInput: this.searchInput })
+      this.$router.push({
+        name: 'search',
+        params: { keyword: this.searchInput || undefined },
+        query: { k: this.searchInput || undefined }
+      })
     }
   }
 }
@@ -205,8 +208,10 @@ export default {
         // transform: translateY(100%);
         width: 300px;
         height: 400px;
+        background-color: #fff;
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
         border-radius: 10px;
+        z-index: 999;
 
         .menu-top {
           margin: 0 20px;

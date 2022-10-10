@@ -1,12 +1,12 @@
 <template>
   <div class="search-container">
-    <!-- <div style="width: 100%; background-color: yellow">123</div> -->
+    <h2>搜索 {{ $route.params.keyword }}</h2>
     <transition name="el-fade-in-linear">
       <div v-show="show" class="transition-box">
         <table class="search-table" border="0">
           <thead>
             <th></th>
-            <th class="song-title">歌曲标题</th>
+            <th class="song-title">音乐标题</th>
             <th class="artist">歌手</th>
             <th class="album">专辑</th>
             <th class="time">时长</th>
@@ -22,17 +22,17 @@
                 <span v-if="playIndex != index">{{ index + 1 }}</span>
                 <span v-else class="el-icon-star-on"></span>
               </td>
-              <td :data-songInfo="item.id" :data-index="index" class="">
+              <td :data-songInfo="item.id" :data-index="index" class="" style="max-width: 800px">
                 {{ item.name }}
               </td>
-              <td class="">
+              <td class="" style="min-width: 300px">
                 <span v-for="(item2, index) in item.ar" :key="item2.id">
-                  <a href="javascript:;">{{ item2.name }}</a
+                  <span class="hoverPointer">{{ item2.name }}</span
                   ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
                 </span>
               </td>
-              <td>{{ item.al.name }}</td>
-              <td :data-songInfo="item.id" :data-index="index" class="">
+              <td class="hoverPointer" style="min-width: 300px">{{ item.al.name }}</td>
+              <td :data-songInfo="item.id" :data-index="index" class="" style="min-width: 200px">
                 {{ tranformTime(item.dt) }}
               </td>
             </tr>
@@ -45,7 +45,7 @@
 
 <script>
 import { mapState } from 'vuex'
-// import bus from '@/EventBus'
+import bus from '@/EventBus'
 
 export default {
   name: 'SearchVue',
@@ -66,9 +66,16 @@ export default {
     sendChosenSong(event) {
       //利用vuex发送与获取歌曲
       let { songinfo, index } = event.target.dataset
+      if (!songinfo) return
       this.$store.dispatch('getSongUrl', { id: songinfo })
+
+      this.$store.dispatch('getSongLyrics', { id: songinfo })
       this.currentIndex = index
       this.playIndex = index
+
+      let item = this.songsList[index]
+      let data = { songName: item.name, id: item.id, ar: item.ar, al: item.al }
+      bus.$emit('showSongInfo', data)
     },
     changeIndex(event) {
       let { index } = event.target.dataset
@@ -89,12 +96,18 @@ export default {
     songsList() {
       this.currentIndex = -1
       this.playIndex = -1
+    },
+    $route() {
+      this.$store.dispatch('getSearchRes', { searchInput: this.$route.params.keyword })
     }
+  },
+  beforeCreate() {
+    this.$store.dispatch('getSearchRes', { searchInput: this.$route.params.keyword })
   },
   created() {
     setTimeout(() => {
       this.show = true
-    }, 100)
+    }, 500)
   }
 }
 </script>
@@ -103,6 +116,19 @@ export default {
 .search-container {
   flex: auto;
   overflow: auto;
+  font-weight: bold;
+  h2 {
+    margin-left: 20px;
+    margin-bottom: 20px;
+    font-family: '楷体';
+  }
+  a {
+    text-decoration: none;
+  }
+  .hoverPointer:hover {
+    cursor: pointer;
+    color: hotpink;
+  }
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -151,6 +177,7 @@ export default {
       }
     }
     .song-line {
+      width: auto;
       height: 60px;
       line-height: 60px;
       td {

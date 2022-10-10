@@ -1,17 +1,17 @@
 <template>
   <div class="index-container">
-    <FindMusicVue></FindMusicVue>
+    <AsideVue></AsideVue>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import FindMusicVue from '@/components/FindMusic'
+import AsideVue from '@/components/Aside'
 
 export default {
   name: 'IndexVue',
   components: {
-    FindMusicVue
+    AsideVue
   }
 }
 </script>
@@ -19,7 +19,6 @@ export default {
 <style lang="less" scoped>
 .index-container {
   display: flex;
-  // background-color: aqua;
   order: 2;
   height: 795px;
 }

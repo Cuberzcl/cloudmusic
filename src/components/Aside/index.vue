@@ -1,10 +1,10 @@
 <template>
-  <div class="find-music-container"></div>
+  <div class="find-music-container">this is aside</div>
 </template>
 
 <script>
 export default {
-  name: 'FindMusicVue'
+  name: 'AsideVue'
 }
 </script>
 
@@ -13,6 +13,7 @@ export default {
   display: flex;
   float: left;
   width: 200px;
+  min-width: 200px;
   height: 100%;
   background-color: pink;
 }

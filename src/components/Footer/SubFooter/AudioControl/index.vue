@@ -37,11 +37,8 @@
             <el-slider v-model="volume" :show-tooltip="false"> </el-slider>
           </div>
         </el-collapse-transition>
-
-        <!-- <transition name="el-fade-in-linear"> </transition> -->
       </div>
     </div>
-    <!-- <div class="slider"><el-slider :show-tooltip="false" v-model="val"></el-slider></div> -->
   </div>
 </template>
 
@@ -49,11 +46,6 @@
 import bus from '@/EventBus'
 export default {
   name: 'AudioControlVue',
-  // props: {
-  //   audioList: {
-  //     type: Array
-  //   }
-  // },
   data() {
     return {
       deg: 0, //旋转度数
@@ -131,7 +123,6 @@ export default {
           margin-bottom: 10px;
           height: 100px;
           width: 10px;
-          overflow: hidden;
           .audio__play-volume {
             height: 100px;
             width: 10px;

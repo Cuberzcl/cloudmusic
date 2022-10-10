@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import Index from '@/views/Index'
 import Home from '@/views/Index/Home'
 import Search from '@/views/Index/Search'
+import Play from '@/views/Play'
 
 Vue.use(VueRouter)
 let originPush = VueRouter.prototype.push
@@ -43,8 +44,9 @@ export default new VueRouter({
       redirect: '/index/home',
       children: [
         { path: 'home', component: Home, name: 'home' },
-        { path: 'search', component: Search, name: 'search' }
+        { path: 'search/:keyword?', component: Search, name: 'search' }
       ]
-    }
+    },
+    { path: '/play', component: Play }
   ]
 })
