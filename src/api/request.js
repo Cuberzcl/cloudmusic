@@ -2,10 +2,10 @@ import axios from 'axios'
 const u1 = '10.144.206.123'
 const u2 = '192.168.23.59'
 const u3 = '127.0.0.1'
-const u4 = '10.198.202.222'
+const u4 = '10.198.51.131'
 u1, u2, u3, u4
 const _request = axios.create({
-  baseURL: 'http://' + u3 + ':3000/',
+  baseURL: 'http://' + u4 + ':3000/',
   timeout: 5000
 })
 

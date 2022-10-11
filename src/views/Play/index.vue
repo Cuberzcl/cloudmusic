@@ -3,7 +3,7 @@
     <transition name="show">
       <div class="show" v-if="showPlay">
         <PlaySongInfoVue :songData="songData" class="info"></PlaySongInfoVue>
-        <LyricsVue :lyrics="lyrics" class="lyrics"></LyricsVue>
+        <LyricsVue :lyrics="lyrics" :index="index" class="lyrics"></LyricsVue>
       </div>
     </transition>
   </div>
@@ -20,7 +20,10 @@ export default {
   data() {
     return {
       songData: {},
-      showPlay: false
+      showPlay: false,
+      currentTime: bus.currentTime,
+      index: -1,
+      timeOffset: 0.1
     }
   },
   components: {
@@ -30,7 +33,17 @@ export default {
   methods: {},
   computed: {
     ...mapState({
-      lyrics: state => state.play.lyrics
+      lyrics: state => {
+        let Arr = state.play.lyrics.split('\n')
+        let tempArr = []
+        for (let i = 0; i < Arr.length; i++) {
+          let time = parseFloat(Arr[i].slice(1, 3)) * 60 + parseFloat(Arr[i].slice(4, 10))
+          let lyric = Arr[i].slice(Arr[i].indexOf(']') + 1)
+          tempArr.push({ time, lyric })
+        }
+        tempArr[tempArr.length - 1].time = tempArr[tempArr.length - 2].time + 100
+        return tempArr
+      }
     })
   },
   created() {
@@ -39,6 +52,26 @@ export default {
       this.songData = data
 
       // this.$store.dispatch('getSongLyrics', { id: data.id })
+    })
+    bus.$off('curInfo')
+    bus.$on('curInfo', data => {
+      if (data + this.timeOffset >= this.lyrics[this.index + 1].time) {
+        for (let i = this.index + 1; i < this.lyrics.length; i++) {
+          if (data + this.timeOffset < this.lyrics[i].time) {
+            this.index = i - 1
+            break
+          }
+        }
+      } else if (data + this.timeOffset < this.lyrics[this.index].time) {
+        for (let i = this.index - 1; i >= 0; i--) {
+          if (data + this.timeOffset >= this.lyrics[i].time) {
+            this.index = i
+            break
+          }
+        }
+      }
+
+      this.currentTime = data
     })
   },
   mounted() {
@@ -58,7 +91,7 @@ export default {
   position: relative;
   display: flex;
   order: 2;
-  height: 795px;
+  height: 800px;
   .show {
     height: 100%;
     width: 100%;

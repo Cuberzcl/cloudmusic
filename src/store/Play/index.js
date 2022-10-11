@@ -1,7 +1,7 @@
 import { get_song_lyrics } from '@/api'
 
 const state = {
-  lirics: {}
+  lirics: ''
 }
 
 const mutations = {

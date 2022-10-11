@@ -12,6 +12,7 @@
         @play="rotate"
         @pause="stop_rotate"
         @ended="clearDeg"
+        @timeupdate="sendCurInfo"
       />
       <div class="audio-volume" @mouseleave="showSlider = false">
         <!--  -->
@@ -80,6 +81,12 @@ export default {
     //清除旋转度数
     clearDeg() {
       this.deg = 0
+    },
+    //发送歌曲信息到Play
+    sendCurInfo() {
+      var time = this.$refs.audioPlayer.currentTime
+      bus.currentTime = time
+      bus.$emit('curInfo', time)
     }
   },
   mounted() {
