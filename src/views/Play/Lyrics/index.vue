@@ -1,5 +1,10 @@
 <template>
-  <div class="lyrics-container">
+  <div
+    class="lyrics-container"
+    :class="{ scroller: scroller }"
+    @mouseenter="scroller = true"
+    @mouseleave="scroller = false"
+  >
     <div class="lyrics" ref="lyrics">
       <h1></h1>
       <h1></h1>
@@ -25,21 +30,30 @@ export default {
   },
   data() {
     return {
-      lyricsArr: this.lyrics
+      lyricsArr: this.lyrics,
+      scroller: false
     }
   },
-  watch: {
-    index(nv, ov) {
-      if (ov == -1) ov = 0
+  methods: {
+    updateCur(nv, ov) {
       this.$nextTick(() => {
         var ls = this.$refs.lyrics.querySelectorAll('p')[nv]
         var ols = this.$refs.lyrics.querySelectorAll('p')[ov]
         ols.className = ''
         ls.className = 'cur'
         var scrollY = ls.offsetTop
-        // ls.parentElement.scrollTo({ top: 800, behavior: 'smooth' })
         document.querySelector('.lyrics').scrollTo({ top: scrollY - 280, behavior: 'smooth' })
       })
+    }
+  },
+  mounted() {
+    this.updateCur(this.index, 0)
+  },
+  watch: {
+    index(nv, ov) {
+      console.log(1)
+      if (ov == -1) ov = 0
+      this.updateCur(nv, ov)
     }
   }
 }
@@ -72,41 +86,52 @@ export default {
     margin: 90px 20px;
     color: #0f0f0f;
   }
-
-  &::-webkit-scrollbar {
-    width: 6px;
-
-    height: 10px;
-
-    background-color: #eee;
-  }
-
-  /*定义滚动条轨道
-
-内阴影+圆角*/
-
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-
-    border-radius: 3px;
-
-    background-color: #e5ffff;
-  }
-
-  /*定义滑块
-
-内阴影+圆角*/
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-
-    background-color: #aff;
+  .prev {
+    background: linear-gradient(180deg, #ffffff 10%, #0f0f0f 100%);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .lyrics {
     height: 100%;
   }
+  &::-webkit-scrollbar {
+    width: 6px;
+
+    height: 10px;
+
+    background-color: transparent;
+  }
+}
+.scroller::-webkit-scrollbar {
+  width: 6px;
+
+  height: 10px;
+
+  background-color: #eee;
+}
+
+/*定义滚动条轨道
+
+内阴影+圆角*/
+
+.scroller::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+
+  border-radius: 3px;
+
+  background-color: #e5ffff;
+}
+
+/*定义滑块
+
+内阴影+圆角*/
+
+.scroller::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+
+  background-color: #aff;
 }
 </style>

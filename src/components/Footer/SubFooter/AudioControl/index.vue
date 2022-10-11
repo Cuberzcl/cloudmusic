@@ -84,9 +84,9 @@ export default {
     },
     //发送歌曲信息到Play
     sendCurInfo() {
-      var time = this.$refs.audioPlayer.currentTime
-      bus.currentTime = time
-      bus.$emit('curInfo', time)
+      var data = this.$refs.audioPlayer.currentTime
+      bus.currentTime = data
+      bus.$emit('curInfo', data)
     }
   },
   mounted() {
@@ -113,6 +113,7 @@ export default {
   height: 70px;
   position: absolute;
   left: 50%;
+  top: 3px;
   transform: translateX(-50%);
   // background-color: pink;
   text-align: center;
