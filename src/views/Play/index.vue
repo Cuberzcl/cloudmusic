@@ -62,6 +62,8 @@ export default {
             break
           }
         }
+      } else if (data + this.timeOffset < this.lyrics[0].time) {
+        this.index = -1
       } else if (data + this.timeOffset < this.lyrics[this.index].time) {
         for (let i = this.index - 1; i >= 0; i--) {
           if (data + this.timeOffset >= this.lyrics[i].time) {

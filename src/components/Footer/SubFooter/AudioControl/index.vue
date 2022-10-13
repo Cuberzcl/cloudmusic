@@ -97,6 +97,12 @@ export default {
         this.$refs.audioPlayer.play()
       })
     })
+    bus.$on('changeSongTime', val => {
+      var audio = document.querySelector('.audio-player__audio')
+      audio.load()
+      audio.currentTime = val
+      this.$refs.audioPlayer.play()
+    })
   },
   watch: {
     //监听音量变化
