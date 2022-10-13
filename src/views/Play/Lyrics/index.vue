@@ -118,6 +118,7 @@ export default {
     },
     changeSongTime() {
       clearTimeout(this.scrollTime)
+      this.pointer = false
       bus.$emit('changeSongTime', this.lyrics[this.scrollIndex].time)
     }
   },

@@ -25,13 +25,15 @@
               <td :data-songInfo="item.id" :data-index="index" class="" style="max-width: 800px">
                 {{ item.name }}
               </td>
-              <td class="" style="min-width: 300px">
+              <td class="" style="min-width: 300px" :data-songInfo="item.id" :data-index="index">
                 <span v-for="(item2, index) in item.ar" :key="item2.id">
-                  <span class="hoverPointer">{{ item2.name }}</span
+                  <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
                   ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
                 </span>
               </td>
-              <td class="hoverPointer" style="min-width: 300px">{{ item.al.name }}</td>
+              <td style="min-width: 300px" :data-songInfo="item.id" :data-index="index">
+                <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
+              </td>
               <td :data-songInfo="item.id" :data-index="index" class="" style="min-width: 200px">
                 {{ tranformTime(item.dt) }}
               </td>
@@ -90,7 +92,11 @@ export default {
       s = s < 10 ? '0' + s : s
       m = m < 10 ? '0' + m : m
       return m + ':' + s
-    }
+    },
+    //跳转到歌手页面
+    arRouter() {},
+    //跳转到专辑页面
+    alRouter() {}
   },
   watch: {
     songsList() {
