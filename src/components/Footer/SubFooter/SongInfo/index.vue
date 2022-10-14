@@ -79,13 +79,20 @@ export default {
     bus.$on('showSongInfo', data => {
       this.songData = data
       this.picShow = true
+      localStorage.setItem('songData', JSON.stringify(data))
     })
+
+    let songData = localStorage.getItem('songData')
+    if (songData) {
+      this.songData = JSON.parse(songData)
+      this.picShow = true
+      this.$store.dispatch('getSongLyrics', { id: this.songData.id })
+    }
   },
   methods: {
     changeRouter() {
       if (this.$route.path != '/play') {
         this.$router.push('/play')
-
         this.$nextTick(() => {
           bus.$emit('songInfo', this.songData)
         })

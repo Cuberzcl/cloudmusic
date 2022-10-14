@@ -18,23 +18,23 @@
               class="song-line"
               :class="{ current: currentIndex == index }"
             >
-              <td :data-songInfo="item.id" :data-index="index" class="index">
+              <td :data-songId="item.id" :data-index="index" class="index">
                 <span v-if="playIndex != index">{{ index + 1 }}</span>
                 <span v-else class="el-icon-star-on"></span>
               </td>
-              <td :data-songInfo="item.id" :data-index="index" class="" style="max-width: 800px">
+              <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
                 {{ item.name }}
               </td>
-              <td class="" style="min-width: 300px" :data-songInfo="item.id" :data-index="index">
+              <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
                 <span v-for="(item2, index) in item.ar" :key="item2.id">
                   <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
                   ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
                 </span>
               </td>
-              <td style="min-width: 300px" :data-songInfo="item.id" :data-index="index">
+              <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
                 <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
               </td>
-              <td :data-songInfo="item.id" :data-index="index" class="" style="min-width: 200px">
+              <td :data-songId="item.id" :data-index="index" class="" style="min-width: 200px">
                 {{ tranformTime(item.dt) }}
               </td>
             </tr>
@@ -67,11 +67,11 @@ export default {
   methods: {
     sendChosenSong(event) {
       //利用vuex发送与获取歌曲
-      let { songinfo, index } = event.target.dataset
-      if (!songinfo) return
-      this.$store.dispatch('getSongUrl', { id: songinfo })
+      let { songid, index } = event.target.dataset
+      if (!songid) return
+      this.$store.dispatch('getSongUrl', { id: songid })
 
-      this.$store.dispatch('getSongLyrics', { id: songinfo })
+      this.$store.dispatch('getSongLyrics', { id: songid })
       this.currentIndex = index
       this.playIndex = index
 

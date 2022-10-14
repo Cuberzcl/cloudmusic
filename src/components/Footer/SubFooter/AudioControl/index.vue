@@ -52,6 +52,7 @@ export default {
       deg: 0, //旋转度数
       speed: 10, //旋转速度
       time: 0, //记录定时器
+      setTime: 0, //记录储存播放时间的定时器
       controlsColor: 'pink', //主题颜色
       volume: 50, //音量
       showSlider: false, //是否出现音量滑块
@@ -62,6 +63,7 @@ export default {
   methods: {
     rotate() {
       clearInterval(this.time)
+      clearInterval(this.setTime)
       var slider_btn = document.querySelector('.audio__progress-point')
 
       this.time = setInterval(() => {
@@ -69,6 +71,12 @@ export default {
 
         slider_btn.style.transform = 'rotate(' + this.deg + 'rad)'
       }, 5 * this.speed)
+
+      this.setTime = setInterval(() => {
+        var audio = document.querySelector('.audio-player__audio')
+
+        localStorage.setItem('currentTime', audio.currentTime)
+      }, 1000)
     },
     stop_rotate() {
       clearInterval(this.time)
@@ -90,9 +98,28 @@ export default {
     }
   },
   mounted() {
-    this.setVolume
+    this.setVolume()
+    let url = localStorage.getItem('url')
+    if (url) {
+      this.audioList[0].url = url
+      let currentTime = localStorage.getItem('currentTime')
+      if (currentTime) {
+        var audio = document.querySelector('.audio-player__audio')
+        audio.currentTime = currentTime
+        bus.currentTime = currentTime
+        audio.muted = true
+        setTimeout(() => {
+          this.$refs.audioPlayer.play()
+          setTimeout(() => {
+            this.$refs.audioPlayer.pause()
+            audio.muted = false
+          }, 100)
+        }, 50)
+      }
+    }
     bus.$on('playAudio', val => {
       this.audioList[0].url = val
+      localStorage.setItem('url', val)
       this.$nextTick(() => {
         this.$refs.audioPlayer.play()
       })
@@ -208,7 +235,9 @@ export default {
         left: 45px;
         /deep/ .el-slider__runway {
           margin-top: 20px;
+          margin-left: 6px;
           width: 100px !important;
+
           .el-slider__bar {
             width: 100%;
             background-color: pink;

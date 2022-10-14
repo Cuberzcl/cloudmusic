@@ -84,6 +84,7 @@ export default {
     bus.$on('goPrev', () => {
       this.showPlay = false
     })
+    bus.$emit('curInfo', bus.currentTime)
   }
 }
 </script>
