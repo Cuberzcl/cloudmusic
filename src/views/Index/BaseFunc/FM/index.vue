@@ -1,10 +1,10 @@
 <template>
-  <div>this is Home</div>
+  <div>this is FM</div>
 </template>
 
 <script>
 export default {
-  name: 'HomeVue'
+  name: 'FMVue'
 }
 </script>
 
