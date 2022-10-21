@@ -1,68 +1,62 @@
 <template>
-  <div class="search-container">
-    <h2>搜索 {{ $route.params.keyword }}</h2>
-    <transition name="el-fade-in-linear">
-      <div v-show="show" class="transition-box">
-        <table class="search-table" border="0">
-          <thead>
-            <th></th>
-            <th class="song-title">音乐标题</th>
-            <th class="artist">歌手</th>
-            <th class="album">专辑</th>
-            <th class="time">时长</th>
-          </thead>
-          <tbody cellpadding="0" cellspacing="0" @dblclick="sendChosenSong" @click="changeIndex">
-            <tr
-              v-for="(item, index) in songsList"
-              :key="item.id"
-              class="song-line"
-              :class="{ current: currentIndex == index }"
-            >
-              <td :data-songId="item.id" :data-index="index" class="index">
-                <span v-if="playIndex != index">{{ index + 1 }}</span>
-                <span v-else class="el-icon-star-on"></span>
-              </td>
-              <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
-                {{ item.name }}
-              </td>
-              <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
-                <span v-for="(item2, index) in item.ar" :key="item2.id">
-                  <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
-                  ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
-                </span>
-              </td>
-              <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
-                <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
-              </td>
-              <td :data-songId="item.id" :data-index="index" class="" style="min-width: 200px">
-                {{ tranformTime(item.dt) }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </transition>
+  <div class="song-table-container">
+    <div>
+      <table class="song-table" border="0">
+        <thead>
+          <th></th>
+          <th class="song-title">音乐标题</th>
+          <th class="artist">歌手</th>
+          <th class="album">专辑</th>
+          <th class="time">时长</th>
+        </thead>
+        <tbody cellpadding="0" cellspacing="0" @dblclick="sendChosenSong" @click="changeIndex">
+          <tr
+            v-for="(item, index) in songsList"
+            :key="item.id"
+            class="song-line"
+            :class="{ current: currentIndex == index }"
+          >
+            <td :data-songId="item.id" :data-index="index" class="index">
+              <span v-if="playIndex != index">{{ index + 1 }}</span>
+              <span v-else class="el-icon-star-on"></span>
+            </td>
+            <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
+              {{ item.name }}
+            </td>
+            <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
+              <span v-for="(item2, index) in item.ar" :key="item2.id">
+                <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
+                ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
+              </span>
+            </td>
+            <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
+              <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
+            </td>
+            <td :data-songId="item.id" :data-index="index" class="" style="min-width: 200px">
+              {{ tranformTime(item.dt) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import bus from '@/EventBus'
 
 export default {
-  name: 'SearchVue',
+  name: 'SongTableVue',
   data() {
     return {
-      show: false,
       currentIndex: -1,
       playIndex: -1
     }
   },
-  computed: {
-    ...mapState({
-      songsList: state => state.search.searchResult.songs,
-      audioList: state => state.search.audioList
-    })
+  props: {
+    songsList: {
+      type: Array
+    }
   },
   methods: {
     sendChosenSong(event) {
@@ -102,25 +96,13 @@ export default {
     songsList() {
       this.currentIndex = -1
       this.playIndex = -1
-    },
-    $route() {
-      this.$store.dispatch('getSearchRes', { searchInput: this.$route.params.keyword })
     }
-  },
-  beforeCreate() {
-    this.$store.dispatch('getSearchRes', { searchInput: this.$route.params.keyword })
-  },
-  created() {
-    setTimeout(() => {
-      this.show = true
-    }, 500)
   }
 }
 </script>
 
 <style lang="less" scoped>
-.search-container {
-  flex: auto;
+.song-table-container {
   overflow: auto;
   font-weight: bold;
   h2 {
@@ -167,7 +149,7 @@ export default {
 
     background-color: #ff94a9;
   }
-  .search-table {
+  .song-table {
     margin-top: 20px;
     width: 100%;
     // border-collapse: collapse !important;

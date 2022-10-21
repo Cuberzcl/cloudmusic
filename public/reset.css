@@ -1,5 +1,12 @@
 /* 清除内外边距 */
 body,
+html {
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+  min-width: 1200px;
+  min-height: 500px;
+}
+body,
 h1,
 h2,
 h3,

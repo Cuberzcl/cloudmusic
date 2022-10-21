@@ -1,6 +1,6 @@
 <template>
   <div class="playSongInfo-container">
-    <h1 class="songName">{{ songData.songName }}</h1>
+    <h1 class="songName">{{ songData.name }}</h1>
     <p class="arName">
       <span v-for="(item, index) in songData.ar" :key="item.id">
         <span class="hoverPointer">{{ item.name }}</span

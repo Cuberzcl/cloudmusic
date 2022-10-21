@@ -1,6 +1,9 @@
 <template>
   <!-- 1 -->
-  <div id="header-container">
+  <div
+    id="header-container"
+    :style="{ '--WP': Global.widthProportion, '--HP': Global.heightProportion }"
+  >
     <div id="logo">
       <a href="#/index"></a>
     </div>
@@ -73,9 +76,10 @@
       </div>
       <div class="menu-demo">
         <ul>
-          <li class="el-icon-brush menu-item"></li>
-          <li class="el-icon-message menu-item"></li>
-          <li class="el-icon-setting menu-item"></li>
+          <li class="el-icon-brush menu-item" title="主题"></li>
+          <li class="el-icon-message menu-item" title="消息"></li>
+          <li class="el-icon-setting menu-item" title="设置"></li>
+          <li class="el-icon-document menu-item" title="日志"></li>
         </ul>
       </div>
     </div>
@@ -95,6 +99,7 @@ export default {
       dropdown: false
     }
   },
+
   methods: {
     sendSearchInput() {
       bus.$emit('toSearch', this.searchInput)
@@ -110,6 +115,9 @@ export default {
 
 <style lang="less" scoped>
 #header-container {
+  @WP: var(--WP);
+  @HP: var(--HP);
+
   position: relative;
   padding: 0 40px;
   display: flex;

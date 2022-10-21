@@ -1,83 +1,36 @@
 <template>
   <div
-    class="find-music-container"
+    class="aside-container"
     @mouseenter="scrollerLive = true"
     @mouseleave="scrollerLive = false"
     :class="{ scroller: scrollerLive }"
+    :style="{ '--myColor': color }"
   >
-    <ul class="base-functions">
-      <li v-for="(item, index) in baseFunctions" :key="index" @click="changeBaseIndex(index)">
-        <router-link :to="item.path" :class="{ changeBGC: baseIndex == index }">{{
-          item.name
-        }}</router-link>
-      </li>
-    </ul>
-    <!-- <ul>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-      <li>1</li>
-    </ul> -->
+    <div class="base-functions">
+      <ul>
+        <li v-for="(item, index) in baseFunctions" :key="index" @click="changeBaseIndex(index)">
+          <router-link :to="item.path" :class="{ changeBGC: baseIndex == index }">{{
+            item.name
+          }}</router-link>
+        </li>
+      </ul>
+    </div>
+    <div class="my-music">
+      <p>我的音乐</p>
+      <ul>
+        <li v-for="(item, index) in myMusic" :key="index" @click="changeMusicIndex(index)">
+          <router-link :to="item.path" :class="{ changeBGC: musicIndex == index }"
+            ><i :class="item.icon"></i>{{ item.name }}</router-link
+          >
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
+import bus from '@/EventBus'
+
 export default {
   name: 'AsideVue',
   data() {
@@ -90,13 +43,45 @@ export default {
         { name: '直播', path: '/index/basefunc/live' },
         { name: '私人FM', path: '/index/basefunc/FM' }
       ],
+      myMusic: [
+        {
+          name: '我喜欢的音乐',
+          path: '/index/mymusic/like',
+          icon: 'glyphicon glyphicon-heart-empty'
+        },
+        {
+          name: '本地与下载',
+          path: '/index/mymusic/saved',
+          icon: 'glyphicon glyphicon-download-alt'
+        },
+        { name: '最近播放', path: '/index/mymusic/recent', icon: 'glyphicon glyphicon-time' },
+        {
+          name: '我的音乐云盘',
+          path: '/index/mymusic/cloud',
+          icon: 'glyphicon glyphicon-cloud'
+        },
+        { name: '我的博客', path: '/index/mymusic/podcast', icon: 'glyphicon glyphicon-equalizer' },
+        {
+          name: '我的收藏',
+          path: '/index/mymusic/collection',
+          icon: 'glyphicon glyphicon-star-empty'
+        }
+      ],
       scrollerLive: false,
-      baseIndex: 0
+      baseIndex: 0,
+      musicIndex: -1,
+      key: 1,
+      color: bus.color
     }
   },
   methods: {
     changeBaseIndex(i) {
+      this.musicIndex = -1
       this.baseIndex = i
+    },
+    changeMusicIndex(i) {
+      this.baseIndex = -1
+      this.musicIndex = i
     }
   },
   watch: {
@@ -112,16 +97,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
-@liHeight: 40px;
-.find-music-container {
-  display: flex;
+.aside-container {
+  @color: var(--myColor);
   float: left;
   width: 200px;
   min-width: 200px;
   height: 100%;
   overflow: auto;
   border-right: 1px solid #e0e0e0;
-  // background-color: pink;
+  background-color: @color;
 
   a {
     color: black;
@@ -131,24 +115,59 @@ export default {
   .changeBGC {
     background-color: #f6f6f7;
   }
-  .base-functions {
-    width: 100%;
+  .color(@color1,@color2) {
+    background-image: -webkit-gradient(linear, left 0, right 0, from(@color1), to(@color2));
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .my-ul {
     li {
       width: 100%;
       height: @liHeight;
       text-align: left;
-      padding: 15px 5px;
+      padding: 0 5px;
       a {
         height: @liHeight;
         padding-left: 15px;
         line-height: @liHeight;
         font-size: 16px;
+        font-family: @my-font-family;
         border-radius: 4px;
+        i {
+          margin: 5px;
+          position: relative;
+          top: 3px;
+          .color(pink,#ffffaa);
+        }
         &:hover {
           .changeBGC();
         }
       }
     }
+  }
+  .base-functions {
+    float: left;
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    .my-ul();
+  }
+
+  .my-music {
+    float: left;
+    width: 100%;
+    margin-top: 5px;
+    p {
+      width: 100%;
+      height: @liHeight;
+      line-height: @liHeight;
+      text-align: left;
+      padding: 0 20px;
+      margin: -5px 0;
+      font-size: 14px;
+      color: #9f9f9f;
+    }
+    .my-ul();
   }
   &::-webkit-scrollbar {
     width: 8px;

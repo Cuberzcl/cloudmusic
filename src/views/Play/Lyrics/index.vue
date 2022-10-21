@@ -195,16 +195,18 @@ export default {
       line-height: 40px;
       font-size: 20px;
       color: #999;
+      transition-property: color;
+      transition-duration: 0.5s;
     }
     p {
       height: auto;
     }
     .cur {
       height: auto;
-      line-height: 50px;
       font-weight: bolder;
       font-size: 30px;
-      font-family: '黑体';
+      // font-family: '黑体';
+      font-family: @my-font-family;
       margin: 90px 200px;
       color: #0f0f0f;
     }

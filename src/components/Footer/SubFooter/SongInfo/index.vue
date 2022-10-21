@@ -10,7 +10,7 @@
     <div class="tran-area">
       <transition name="songInfo">
         <div class="songInfo" v-show="this.$route.path != '/play'">
-          <p class="songName" @click="changeRouter()">{{ songData.songName }}</p>
+          <p class="songName" @click="changeRouter()">{{ songData.name }}</p>
           <div class="little-like"></div>
           <p class="arName">
             <span v-for="(item, index) in songData.ar" :key="item.id">
@@ -24,17 +24,12 @@
         <div class="songOperate" v-show="this.$route.path == '/play'">
           <ul>
             <li
-              @click="liked = !liked"
+              @click="like"
               title="喜欢"
               class="like glyphicon glyphicon-heart-empty"
               v-if="!liked"
             ></li>
-            <li
-              @click="liked = !liked"
-              title="取消喜欢"
-              class="like glyphicon glyphicon-heart"
-              v-else
-            ></li>
+            <li @click="unlike" title="取消喜欢" class="like glyphicon glyphicon-heart" v-else></li>
             <li
               @click="collected = !collected"
               title="收藏"
@@ -71,7 +66,9 @@ export default {
       picShow: false,
       liked: false,
       collected: false,
-      downloaded: false
+      downloaded: false,
+      likesId: [0],
+      likes: []
     }
   },
   created() {
@@ -79,6 +76,12 @@ export default {
     bus.$on('showSongInfo', data => {
       this.songData = data
       this.picShow = true
+
+      if (this.likesId.indexOf(data.id) !== -1) {
+        this.liked = true
+      } else {
+        this.liked = false
+      }
       localStorage.setItem('songData', JSON.stringify(data))
     })
 
@@ -87,6 +90,20 @@ export default {
       this.songData = JSON.parse(songData)
       this.picShow = true
       this.$store.dispatch('getSongLyrics', { id: this.songData.id })
+    }
+
+    let likesId = JSON.parse(localStorage.getItem('likesId'))
+    let likes = JSON.parse(localStorage.getItem('likes'))
+    if (likesId) {
+      this.likesId = likesId
+      if (likesId.indexOf(this.songData.id) !== -1) {
+        this.liked = true
+      } else {
+        this.liked = false
+      }
+    }
+    if (likes) {
+      this.likes = likes
     }
   },
   methods: {
@@ -102,6 +119,23 @@ export default {
           this.$router.go(-1)
         }, 300)
       }
+    },
+    like() {
+      this.liked = !this.liked
+      this.likesId[this.likesId.length] = this.songData.id
+      localStorage.setItem('likesId', JSON.stringify(this.likesId))
+
+      this.likes[this.likes.length] = this.songData
+      localStorage.setItem('likes', JSON.stringify(this.likes))
+    },
+    unlike() {
+      this.liked = !this.liked
+
+      this.likesId = this.likesId.filter(item => item != this.songData.id)
+      localStorage.setItem('likesId', JSON.stringify(this.likesId))
+
+      this.likes = this.likes.filter(item => item.id != this.songData.id)
+      localStorage.setItem('likes', JSON.stringify(this.likes))
     }
   }
 }

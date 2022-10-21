@@ -2,7 +2,7 @@
   <div id="footer-container">
     <!-- 歌曲信息 -->
     <SongInfoVue></SongInfoVue>
-    <!-- 音频空间 -->
+    <!-- 音频控制 -->
     <AudioControlVue></AudioControlVue>
     <!-- 其他功能 -->
     <OtherChangeVue></OtherChangeVue>
@@ -44,7 +44,7 @@ export default {
 #footer-container {
   // display: flex;
   position: fixed;
-  bottom: 15px;
+  bottom: 5px;
   height: 70px;
   width: 100%;
   border-top: 1px solid #eee;

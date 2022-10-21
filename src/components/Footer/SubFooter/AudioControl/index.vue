@@ -45,6 +45,8 @@
 
 <script>
 import bus from '@/EventBus'
+import axios from 'axios'
+import { get_song_url } from '@/api'
 export default {
   name: 'AudioControlVue',
   data() {
@@ -57,7 +59,9 @@ export default {
       volume: 50, //音量
       showSlider: false, //是否出现音量滑块
       currentAudioName: '',
-      audioList: [{ url: '' }]
+      audioList: [{ url: '' }],
+      songData: {},
+      lastUrl: localStorage.getItem('url')
     }
   },
   methods: {
@@ -72,9 +76,9 @@ export default {
         slider_btn.style.transform = 'rotate(' + this.deg + 'rad)'
       }, 5 * this.speed)
 
+      var audio = document.querySelector('.audio-player__audio')
+      localStorage.setItem('duration', audio.duration)
       this.setTime = setInterval(() => {
-        var audio = document.querySelector('.audio-player__audio')
-
         localStorage.setItem('currentTime', audio.currentTime)
       }, 1000)
     },
@@ -95,28 +99,65 @@ export default {
       var data = this.$refs.audioPlayer.currentTime
       bus.currentTime = data
       bus.$emit('curInfo', data)
-    }
-  },
-  mounted() {
-    this.setVolume()
-    let url = localStorage.getItem('url')
-    if (url) {
-      this.audioList[0].url = url
+    },
+    //播放上一次的歌曲
+    lastSong() {
       let currentTime = localStorage.getItem('currentTime')
+      let duration = localStorage.getItem('duration')
       if (currentTime) {
         var audio = document.querySelector('.audio-player__audio')
+        var wrap = document.querySelector('.audio__progress-wrap')
+        var progress = document.querySelector('.audio__progress')
+        var point = document.querySelector('.audio__progress-point')
+
+        audio.load()
         audio.currentTime = currentTime
+        this.$refs.audioPlayer.currentTime = currentTime
         bus.currentTime = currentTime
-        audio.muted = true
-        setTimeout(() => {
-          this.$refs.audioPlayer.play()
-          setTimeout(() => {
-            this.$refs.audioPlayer.pause()
-            audio.muted = false
-          }, 100)
-        }, 50)
+        
+        let propor = currentTime / duration
+        let width = propor * wrap.clientWidth
+        progress.style.width = width + 'px'
+        point.style.left = width - point.clientWidth / 2 + 'px'
+      }
+    },
+    //用于获取上一次的歌曲url
+    async getSongUrl(id) {
+      let { data: res } = await get_song_url({ id: id })
+      if (res.code === 200) {
+        this.audioList[0].url = res.data[0].url
+        localStorage.setItem('url', res.data[0].url)
+        this.lastSong()
+      } else {
+        console.log('err')
       }
     }
+  },
+  created() {},
+  mounted() {
+    this.setVolume()
+
+    bus.$off('prePlay')
+    //bus.$on('prePlay', () => {
+    let songData = localStorage.getItem('songData')
+    if (songData) {
+      this.songData = JSON.parse(songData)
+      if (this.lastUrl == '') {
+        this.getSongUrl(this.songData.id)
+        return
+      }
+      axios
+        .head(this.lastUrl)
+        .then(() => {
+          this.audioList[0].url = this.lastUrl
+          this.lastSong()
+        })
+        .catch(() => {
+          this.getSongUrl(this.songData.id)
+        })
+    }
+    // })
+
     bus.$on('playAudio', val => {
       this.audioList[0].url = val
       localStorage.setItem('url', val)
