@@ -56,10 +56,11 @@ export default {
 #app {
   @WP: var(--WP);
   @HP: var(--HP);
+  @min: min(@WP, @HP);
 
   width: 1805px;
   height: 937px;
-  transform: scale(calc(@WP), calc(@HP));
+  transform: scale(@min);
   transform-origin: 0 0;
 
   overflow: hidden;
@@ -117,7 +118,7 @@ export default {
     opacity: 0;
   }
   .wel-leave-active {
-    transition: all 1s linear;
+    transition: all 0.5s linear;
   }
 }
 </style>

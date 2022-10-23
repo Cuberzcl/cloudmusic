@@ -10,8 +10,23 @@
     <div class="tran-area">
       <transition name="songInfo">
         <div class="songInfo" v-show="this.$route.path != '/play'">
-          <p class="songName" @click="changeRouter()">{{ songData.name }}</p>
-          <div class="little-like"></div>
+          <p class="songName" @click="changeRouter()">
+            {{ songData.name }}
+          </p>
+          <div class="little-like">
+            <span
+              @click="like"
+              title="喜欢"
+              class="like glyphicon glyphicon-heart-empty"
+              v-if="!liked"
+            ></span>
+            <span
+              @click="unlike"
+              title="取消喜欢"
+              class="unlike glyphicon glyphicon-heart"
+              v-else
+            ></span>
+          </div>
           <p class="arName">
             <span v-for="(item, index) in songData.ar" :key="item.id">
               <span class="hoverPointer">{{ item.name }}</span
@@ -83,6 +98,9 @@ export default {
         this.liked = false
       }
       localStorage.setItem('songData', JSON.stringify(data))
+
+      //记录播放歌曲的id，以判断正在播放哪首歌
+      bus.playId = this.songData.id
     })
 
     let songData = localStorage.getItem('songData')
@@ -90,6 +108,7 @@ export default {
       this.songData = JSON.parse(songData)
       this.picShow = true
       this.$store.dispatch('getSongLyrics', { id: this.songData.id })
+      bus.playId = this.songData.id
     }
 
     let likesId = JSON.parse(localStorage.getItem('likesId'))
@@ -114,6 +133,7 @@ export default {
           bus.$emit('songInfo', this.songData)
         })
       } else {
+        bus.$emit('stopPlayRotate')
         bus.$emit('goPrev')
         setTimeout(() => {
           this.$router.go(-1)
@@ -127,6 +147,7 @@ export default {
 
       this.likes[this.likes.length] = this.songData
       localStorage.setItem('likes', JSON.stringify(this.likes))
+      bus.$emit('updateLikes')
     },
     unlike() {
       this.liked = !this.liked
@@ -136,6 +157,7 @@ export default {
 
       this.likes = this.likes.filter(item => item.id != this.songData.id)
       localStorage.setItem('likes', JSON.stringify(this.likes))
+      bus.$emit('updateLikes')
     }
   }
 }
@@ -192,12 +214,26 @@ export default {
       top: 10px;
       left: 20px;
       .songName {
+        display: inline-block;
         margin-bottom: 2px;
         font-size: 18px;
         font-weight: 700;
         font-family: '黑体';
         &:hover {
           cursor: pointer;
+        }
+      }
+
+      .little-like {
+        margin-left: 5px;
+        display: inline-block;
+        font-size: 18px;
+        font-family: '华文细黑';
+        .like {
+          color: #d0fff0;
+        }
+        .unlike {
+          color: red;
         }
       }
       .hoverPointer:hover {

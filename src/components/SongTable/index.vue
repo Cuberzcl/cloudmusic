@@ -1,44 +1,42 @@
 <template>
   <div class="song-table-container">
-    <div>
-      <table class="song-table" border="0">
-        <thead>
-          <th></th>
-          <th class="song-title">音乐标题</th>
-          <th class="artist">歌手</th>
-          <th class="album">专辑</th>
-          <th class="time">时长</th>
-        </thead>
-        <tbody cellpadding="0" cellspacing="0" @dblclick="sendChosenSong" @click="changeIndex">
-          <tr
-            v-for="(item, index) in songsList"
-            :key="item.id"
-            class="song-line"
-            :class="{ current: currentIndex == index }"
-          >
-            <td :data-songId="item.id" :data-index="index" class="index">
-              <span v-if="playIndex != index">{{ index + 1 }}</span>
-              <span v-else class="el-icon-star-on"></span>
-            </td>
-            <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
-              {{ item.name }}
-            </td>
-            <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
-              <span v-for="(item2, index) in item.ar" :key="item2.id">
-                <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
-                ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
-              </span>
-            </td>
-            <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
-              <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
-            </td>
-            <td :data-songId="item.id" :data-index="index" class="" style="min-width: 200px">
-              {{ tranformTime(item.dt) }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <table class="song-table" border="0">
+      <thead>
+        <th></th>
+        <th class="song-title">音乐标题</th>
+        <th class="artist">歌手</th>
+        <th class="album">专辑</th>
+        <th class="time">时长</th>
+      </thead>
+      <tbody cellpadding="0" cellspacing="0" @dblclick="sendChosenSong" @click="changeIndex">
+        <tr
+          v-for="(item, index) in songsList"
+          :key="item.id"
+          class="song-line"
+          :class="{ current: currentIndex == index }"
+        >
+          <td :data-songId="item.id" :data-index="index" class="index">
+            <span v-if="playIndex != index">{{ transformIndex(index + 1) }}</span>
+            <span v-else class="el-icon-star-on"></span>
+          </td>
+          <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
+            {{ item.name }}
+          </td>
+          <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
+            <span v-for="(item2, index) in item.ar" :key="item2.id">
+              <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
+              ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
+            </span>
+          </td>
+          <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
+            <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
+          </td>
+          <td :data-songId="item.id" :data-index="index" class="" style="min-width: 100px">
+            {{ transformTime(item.dt) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
@@ -72,6 +70,7 @@ export default {
       let item = this.songsList[index]
       let data = { name: item.name, id: item.id, ar: item.ar, al: item.al, dt: item.dt }
       bus.$emit('showSongInfo', data)
+      bus.rad = 0 //换歌时唱片旋转为0
     },
     changeIndex(event) {
       let { index } = event.target.dataset
@@ -79,7 +78,7 @@ export default {
         this.currentIndex = index
       }
     },
-    tranformTime(dt) {
+    transformTime(dt) {
       var s = Math.floor(dt / 1000)
       var m = Math.floor(s / 60)
       s %= 60
@@ -87,15 +86,36 @@ export default {
       m = m < 10 ? '0' + m : m
       return m + ':' + s
     },
+    transformIndex(i) {
+      return (i < 10 ? '0' : '') + i
+    },
     //跳转到歌手页面
     arRouter() {},
     //跳转到专辑页面
-    alRouter() {}
+    alRouter() {},
+    //判断当前播放的歌曲是否在此页面上
+    ensurePlayIndex() {
+      if (bus.playId) {
+        let id = bus.playId
+        this.songsList.forEach((item, index) => {
+          if (item.id == id) {
+            this.playIndex = index
+          }
+        })
+      }
+    }
+  },
+  mounted() {
+    this.ensurePlayIndex()
   },
   watch: {
     songsList() {
       this.currentIndex = -1
       this.playIndex = -1
+      this.ensurePlayIndex()
+    },
+    'bus.playId'() {
+      this.ensurePlayIndex()
     }
   }
 }
@@ -103,8 +123,10 @@ export default {
 
 <style lang="less" scoped>
 .song-table-container {
-  overflow: auto;
-  font-weight: bold;
+  @first-color: #fffff5;
+  @second-color: #fffdff;
+  @selected-color: #f0ffff;
+  // font-weight: bold;
   h2 {
     margin-left: 20px;
     margin-bottom: 20px;
@@ -118,37 +140,6 @@ export default {
     color: hotpink;
   }
 
-  &::-webkit-scrollbar {
-    width: 6px;
-
-    height: 10px;
-
-    background-color: #eee;
-  }
-
-  /*定义滚动条轨道
-
-内阴影+圆角*/
-
-  &::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-
-    border-radius: 3px;
-
-    background-color: #f5f5f5;
-  }
-
-  /*定义滑块
-
-内阴影+圆角*/
-
-  &::-webkit-scrollbar-thumb {
-    border-radius: 3px;
-
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-
-    background-color: #ff94a9;
-  }
   .song-table {
     margin-top: 20px;
     width: 100%;
@@ -159,23 +150,24 @@ export default {
       font-family: '宋体';
     }
     .current {
-      background-color: #f0ffff !important;
+      background-color: @selected-color !important;
       td:nth-child(n + 2) {
-        border-left: 2px solid #f0ffff !important;
+        border-left: 2px solid @selected-color !important;
       }
     }
     .song-line {
       width: auto;
-      height: 60px;
-      line-height: 60px;
+      height: 40px;
+      line-height: 40px;
+      background-color: @second-color;
       td {
         position: relative;
-        height: 60px;
-        line-height: 60px;
+        height: 40px;
+        line-height: 40px;
         padding-left: 20px;
         border: none;
-        font-family: '华文宋体';
-        font-size: 16px;
+        font-family: '华文粗黑';
+        font-size: 14px;
         .el-icon-star-on {
           height: 40px;
           position: absolute;
@@ -184,17 +176,19 @@ export default {
           transform: translateY(-40%);
           color: #ffddff;
           font-size: 30px;
-          transition-property: font-size, left, top;
+          transition-property: font-size left top color;
           transition-duration: 0.5s;
           &:hover {
-            top: 25px;
+            top: 15px;
             font-size: 40px;
             left: 5px;
+
+            color: pink;
           }
         }
       }
       td:nth-child(n + 2) {
-        border-left: 2px solid white;
+        border-left: 2px solid @second-color;
       }
       .index {
         width: 100px;
@@ -205,9 +199,9 @@ export default {
       }
     }
     .song-line:nth-child(odd) {
-      background-color: ivory;
+      background-color: @first-color;
       td:nth-child(n + 2) {
-        border-left: 2px solid ivory;
+        border-left: 2px solid @first-color;
       }
       &:hover {
         .current();

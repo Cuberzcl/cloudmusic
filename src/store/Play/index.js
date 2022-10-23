@@ -1,12 +1,13 @@
 import { get_song_lyrics } from '@/api'
 
 const state = {
-  lirics: ''
+  lirics: '还没有找到歌词~'
 }
 
 const mutations = {
   GETSONGLYRICS(state, lyrics) {
-    state.lyrics = lyrics
+    if (lyrics != '') state.lyrics = lyrics
+    else state.lyrics = '0'
   }
 }
 

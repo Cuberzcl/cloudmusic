@@ -8,6 +8,8 @@
         :theme-color="controlsColor"
         :progress-interval="50"
         :show-volume-button="false"
+        :show-prev-button="false"
+        :show-next-button="false"
         :show-playback-rate="false"
         @play="rotate"
         @pause="stop_rotate"
@@ -61,11 +63,31 @@ export default {
       currentAudioName: '',
       audioList: [{ url: '' }],
       songData: {},
-      lastUrl: localStorage.getItem('url')
+      lastUrl: localStorage.getItem('url'),
+      autoPlay: false, //用于防止一开始就播放
+      volumeTime: 0, //记录声音缓动的计时器
+      playPause: true
     }
   },
   methods: {
     rotate() {
+      if (this.$route.path == '/play') bus.$emit('changeRotate', 1)
+
+      let tempVolume = this.volume
+      if (tempVolume !== 0) {
+        this.volume = 1
+        this.volumeTime = setInterval(() => {
+          this.volume += 5
+        }, 5000 / tempVolume)
+
+        setTimeout(() => {
+          this.volume = tempVolume
+          clearInterval(this.volumeTime)
+        }, 1000)
+      }
+
+      bus.isRotate = true
+
       clearInterval(this.time)
       clearInterval(this.setTime)
       var slider_btn = document.querySelector('.audio__progress-point')
@@ -83,7 +105,29 @@ export default {
       }, 1000)
     },
     stop_rotate() {
+      var audio = document.querySelector('.audio-player__audio')
+      audio.play()
+
+      let tempVolume = this.volume
+      this.volumeTime = setInterval(() => {
+        this.volume -= 5
+        if (this.volume < 5) {
+          clearInterval(this.volumeTime)
+          this.volumeTime = -5
+        }
+      }, 5000 / tempVolume)
+
+      setTimeout(() => {
+        audio.pause()
+        this.volume = tempVolume
+        if (this.volumeTime !== -1) clearInterval(this.volumeTime)
+      }, 1000)
+
+      if (this.$route.path == '/play') bus.$emit('changeRotate', 0)
+      bus.isRotate = false
+
       clearInterval(this.time)
+      clearInterval(this.setTime)
     },
     //设置音量
     setVolume() {
@@ -114,7 +158,7 @@ export default {
         audio.currentTime = currentTime
         this.$refs.audioPlayer.currentTime = currentTime
         bus.currentTime = currentTime
-        
+
         let propor = currentTime / duration
         let width = propor * wrap.clientWidth
         progress.style.width = width + 'px'
@@ -137,8 +181,6 @@ export default {
   mounted() {
     this.setVolume()
 
-    bus.$off('prePlay')
-    //bus.$on('prePlay', () => {
     let songData = localStorage.getItem('songData')
     if (songData) {
       this.songData = JSON.parse(songData)
@@ -156,14 +198,13 @@ export default {
           this.getSongUrl(this.songData.id)
         })
     }
-    // })
 
     bus.$on('playAudio', val => {
       this.audioList[0].url = val
       localStorage.setItem('url', val)
-      this.$nextTick(() => {
+      setTimeout(() => {
         this.$refs.audioPlayer.play()
-      })
+      }, 100)
     })
     bus.$on('changeSongTime', val => {
       var audio = document.querySelector('.audio-player__audio')

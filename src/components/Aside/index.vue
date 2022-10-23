@@ -68,7 +68,7 @@ export default {
         }
       ],
       scrollerLive: false,
-      baseIndex: 0,
+      baseIndex: -1,
       musicIndex: -1,
       key: 1,
       color: bus.color
@@ -84,13 +84,17 @@ export default {
       this.musicIndex = i
     }
   },
+  created() {
+    this.baseIndex = this.$route.meta.baseIndex
+    this.musicIndex = this.$route.meta.musicIndex
+  },
   watch: {
-    $route() {
-      if (this.$route.meta.index) {
-        this.baseIndex = this.$route.meta.index
-      } else {
-        this.baseIndex = -1
-      }
+    $route: {
+      handler() {
+        this.baseIndex = this.$route.meta.baseIndex
+        this.musicIndex = this.$route.meta.musicIndex
+      },
+      deep: true
     }
   }
 }
@@ -99,14 +103,14 @@ export default {
 <style lang="less" scoped>
 .aside-container {
   @color: var(--myColor);
-  float: left;
   width: 200px;
   min-width: 200px;
   height: 100%;
   overflow: auto;
   border-right: 1px solid #e0e0e0;
   background-color: @color;
-
+  position: relative;
+  z-index: 999;
   a {
     color: black;
     text-decoration: none;

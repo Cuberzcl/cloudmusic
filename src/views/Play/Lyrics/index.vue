@@ -123,7 +123,7 @@ export default {
     }
   },
   mounted() {
-    this.updateCur(this.index, 0)
+    if (this.index !== -1) this.updateCur(this.index, 0)
   },
   watch: {
     index(nv, ov) {
