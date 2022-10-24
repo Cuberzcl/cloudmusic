@@ -1,12 +1,12 @@
 <template>
   <div class="audio-control-container">
     <div class="audio">
-      {{ currentAudioName || audioList[0].name }}
       <audio-player
         ref="audioPlayer"
         :audio-list="audioList.map(elm => elm.url)"
         :theme-color="controlsColor"
         :progress-interval="50"
+        :show-play-button="true"
         :show-volume-button="false"
         :show-prev-button="false"
         :show-next-button="false"

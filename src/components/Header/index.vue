@@ -13,19 +13,36 @@
         prefix-icon="el-icon-search"
         v-model="searchInput"
         size="mini"
+        @focus="searchDropdown = true"
+        @blur="searchDropdown = false"
       >
       </el-input>
     </div>
+    <transition name="search-dropdown-menu">
+      <div id="search-dropdown-menu" class="search-dropdown-menu" v-if="!searchDropdown">
+        <div class="blank" v-if="searchInput == ''">
+          <div class="history">
+            <p class="top">
+              <span class="title">搜索历史<span class="icon el-icon-delete"> </span></span>
+              <span class="all" v-if="false">查看全部</span>
+            </p>
+          </div>
+        </div>
+        <div class="searchSuggest" v-else>2</div>
+      </div>
+    </transition>
     <div id="function-area">
-      <div id="user" @mouseleave="dropdown = false">
-        <div class="user-img" @mouseenter="dropdown = false">
+      <div id="user">
+        <div class="user-img">
           <el-avatar :src="userImgUrl"></el-avatar>
         </div>
         <div id="dropdown" class="dropdown" placement="top">
-          <span class="dropdown-link el-icon-arrow-down" @mouseenter="dropdown = true">
+          <span class="dropdown-link el-icon-arrow-down" @click="dropdown = !dropdown">
             {{ username }}
           </span>
         </div>
+      </div>
+      <transition name="my-dropdown-menu">
         <div id="dropdown-menu" class="my-dropdown-menu" v-if="dropdown">
           <div class="menu-top">
             <span>动态</span><span>关注</span><span>粉丝</span>
@@ -73,7 +90,7 @@
             </ul>
           </div>
         </div>
-      </div>
+      </transition>
       <div class="menu-demo">
         <ul>
           <li class="el-icon-brush menu-item" title="主题"></li>
@@ -94,21 +111,67 @@ export default {
   data() {
     return {
       searchInput: '',
-      userImgUrl: require('@/assets/03b0d39583f48206768a7534e55bcpng.png'),
+      userImgUrl: require('@/assets/白花.png'),
       username: '1111',
-      dropdown: false
+      dropdown: false,
+      searchDropdown: false, //搜索下拉框
+      history: new Set()
     }
   },
 
   methods: {
     sendSearchInput() {
+      if (this.history.has(this.searchInput)) {
+        this.history.delete(this.searchInput)
+      }
+      this.history.add(this.searchInput)
+      localStorage.setItem('history', JSON.stringify(Array.from(this.history)))
+
       bus.$emit('toSearch', this.searchInput)
       this.$router.push({
         name: 'search',
         params: { keyword: this.searchInput || undefined },
         query: { k: this.searchInput || undefined }
       })
+    },
+    //鼠标点击事件，用于收起下拉栏
+    dropdownToFalse(e) {
+      let dropdownLink = document.querySelector('.dropdown-link')
+      let dropdownMenu = document.querySelector('#dropdown-menu')
+      if (
+        !(
+          e.target == dropdownLink ||
+          e.target == dropdownMenu ||
+          e.target.offsetParent == dropdownMenu
+        )
+      ) {
+        this.dropdown = false
+      }
+    },
+    //获取历史记录
+    getHistory() {
+      let historyStr = localStorage.getItem('history')
+      if (historyStr != '') this.history = new Set(JSON.parse(historyStr))
     }
+  },
+  created() {
+    this.getHistory()
+  },
+  mounted() {
+    let searchIcon = document.querySelector('.el-icon-search')
+    searchIcon.setAttribute('title', '搜索')
+    //添加搜索点击事件
+    searchIcon.addEventListener('click', () => {
+      this.sendSearchInput()
+    })
+
+    let header = document.querySelector('#header-container')
+    //禁止复制
+    header.onselectstart = () => false
+
+    //移除与添加 click 事件，用于收起下拉栏
+    document.removeEventListener('click', this.dropdownToFalse)
+    document.addEventListener('click', this.dropdownToFalse)
   }
 }
 </script>
@@ -117,6 +180,7 @@ export default {
 #header-container {
   @WP: var(--WP);
   @HP: var(--HP);
+  @themeColor: #ec4141;
 
   position: relative;
   padding: 0 40px;
@@ -162,11 +226,77 @@ export default {
         font-weight: 500;
       }
     }
-    /deep/.el-icon-search:before {
-      align-self: center;
-      font-size: 14px;
-      color: white !important;
+    /deep/.el-icon-search {
+      pointer-events: none;
+      &:before {
+        align-self: center;
+        font-size: 14px;
+        color: white !important;
+        // 启动点击事件
+        pointer-events: auto;
+        cursor: pointer;
+      }
     }
+  }
+  .search-dropdown-menu {
+    position: absolute;
+    top: 65px;
+    left: 120px;
+    width: 400px;
+    height: 750px;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    z-index: 9999;
+    overflow: hidden;
+    text-align: center;
+    .blank {
+      .history {
+        margin: 0 auto;
+        width: 350px;
+        height: auto;
+        .top {
+          width: 350px;
+          height: 40px;
+
+          .title {
+            float: left;
+            color: #aaa;
+            .icon {
+              margin-left: 5px;
+              font-size: 16px;
+              &:hover {
+                color: #555;
+              }
+            }
+          }
+          .all {
+            float: right;
+          }
+        }
+      }
+    }
+  }
+
+  .search-dropdown-menu-enter {
+    height: 0;
+  }
+  .search-dropdown-menu-enter-to {
+    height: 750px;
+  }
+
+  .search-dropdown-menu-enter-active {
+    transition: all 0.3s linear;
+  }
+  .search-dropdown-menu-leave {
+    height: 750px;
+  }
+  .search-dropdown-menu-leave-to {
+    height: 0;
+  }
+
+  .search-dropdown-menu-leave-active {
+    transition: all 0.3s linear;
   }
 
   #function-area {
@@ -179,10 +309,11 @@ export default {
     #user {
       position: absolute;
       display: inline-block;
-      left: 0;
-      width: 300px;
-      height: 465px;
-      // background-color: pink;
+      left: -50px;
+      width: 400px;
+      height: 60px;
+      z-index: 1000;
+      // background-color:
       .user-img {
         left: 80px;
         display: inline-block;
@@ -191,6 +322,11 @@ export default {
         transform: translateY(-50%);
         width: 40px;
         height: 40px;
+        cursor: pointer;
+        /deep/ img {
+          position: relative;
+          left: -20px;
+        }
       }
       .dropdown {
         position: absolute;
@@ -207,44 +343,68 @@ export default {
           white-space: nowrap;
           text-overflow: ellipsis;
           font-size: 14px;
+          cursor: pointer;
         }
       }
-      .my-dropdown-menu {
-        position: absolute;
-        // left: -80px;
-        top: 65px;
-        // transform: translateY(100%);
-        width: 300px;
-        height: 400px;
-        background-color: #fff;
-        box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        z-index: 999;
+    }
+    .my-dropdown-menu {
+      position: absolute;
+      // left: -80px;
+      top: 65px;
+      // transform: translateY(100%);
+      width: 300px;
+      height: 400px;
+      background-color: #fff;
+      box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      z-index: 999;
+      overflow: hidden;
 
-        .menu-top {
-          margin: 0 20px;
-        }
-        .line {
-          margin: 0 10px;
-          border: #eeeeee 0.5px solid;
-        }
-        .line-li {
-          li {
+      .menu-top {
+        margin: 0 20px;
+      }
+      .line {
+        margin: 0 10px;
+        border: #eeeeee 0.5px solid;
+      }
+      .line-li {
+        li {
+          height: 38px;
+          line-height: 38px;
+          cursor: pointer;
+          h5 {
+            margin: 0 20px;
+            display: inline-block;
             height: 38px;
             line-height: 38px;
-            h5 {
-              margin: 0 20px;
-              display: inline-block;
-              height: 38px;
-              line-height: 38px;
-              font-size: 16px;
-            }
-            &:hover {
-              background-color: rgb(240, 241, 242);
-            }
+            font-size: 16px;
+          }
+          &:hover {
+            background-color: rgb(240, 241, 242);
           }
         }
       }
+    }
+
+    .my-dropdown-menu-enter {
+      height: 0;
+    }
+    .my-dropdown-menu-enter-to {
+      height: 400px;
+    }
+
+    .my-dropdown-menu-enter-active {
+      transition: all 0.3s linear;
+    }
+    .my-dropdown-menu-leave {
+      height: 400px;
+    }
+    .my-dropdown-menu-leave-to {
+      height: 0;
+    }
+
+    .my-dropdown-menu-leave-active {
+      transition: all 0.3s linear;
     }
     .menu-demo {
       margin-top: -1px;
