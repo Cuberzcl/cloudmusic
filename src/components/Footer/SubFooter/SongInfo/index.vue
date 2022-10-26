@@ -87,20 +87,27 @@ export default {
     }
   },
   created() {
+    bus.$off('waitingPic')
+    bus.$on('waitingPic', () => {
+      this.songData.al.picUrl = '@/assets/waiting.png'
+      this.picShow = true
+    })
+
     bus.$off('showSongInfo')
     bus.$on('showSongInfo', data => {
       this.songData = data
-      this.picShow = true
 
-      if (this.likesId.indexOf(data.id) !== -1) {
-        this.liked = true
-      } else {
-        this.liked = false
-      }
-      localStorage.setItem('songData', JSON.stringify(data))
+      this.$nextTick(() => {
+        if (this.likesId.indexOf(data.id) !== -1) {
+          this.liked = true
+        } else {
+          this.liked = false
+        }
+        localStorage.setItem('songData', JSON.stringify(data))
 
-      //记录播放歌曲的id，以判断正在播放哪首歌
-      bus.playId = this.songData.id
+        //记录播放歌曲的id，以判断正在播放哪首歌
+        bus.playId = this.songData.id
+      })
     })
 
     let songData = localStorage.getItem('songData')

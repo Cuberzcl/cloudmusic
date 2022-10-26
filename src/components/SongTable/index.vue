@@ -23,7 +23,7 @@
             {{ item.name }}
           </td>
           <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
-            <span v-for="(item2, index) in item.ar" :key="item2.id">
+            <span v-for="(item2, index) in item.ar" :key="item2.id + index">
               <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
               ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
             </span>
@@ -61,6 +61,8 @@ export default {
       //利用vuex发送与获取歌曲
       let { songid, index } = event.target.dataset
       if (!songid) return
+      bus.$emit('waitingPic')
+
       this.$store.dispatch('getSongUrl', { id: songid })
 
       this.$store.dispatch('getSongLyrics', { id: songid })

@@ -1,31 +1,68 @@
 <template>
-  <!-- 1 -->
-  <div
-    id="header-container"
-    :style="{ '--WP': Global.widthProportion, '--HP': Global.heightProportion }"
-  >
+  <div id="header-container">
     <div id="logo">
       <a href="#/index"></a>
     </div>
     <div id="search-input" @keyup.enter="sendSearchInput">
       <el-input
+        :data-nothide="1"
         placeholder="请输入内容"
         prefix-icon="el-icon-search"
         v-model="searchInput"
         size="mini"
-        @focus="searchDropdown = true"
-        @blur="searchDropdown = false"
+        @focus="inputFocus"
+        ref="input"
       >
       </el-input>
     </div>
     <transition name="search-dropdown-menu">
-      <div id="search-dropdown-menu" class="search-dropdown-menu" v-if="!searchDropdown">
+      <div
+        :data-nothide="1"
+        id="search-dropdown-menu"
+        class="search-dropdown-menu"
+        v-if="searchDropdown"
+      >
         <div class="blank" v-if="searchInput == ''">
-          <div class="history">
+          <div class="history" :key="historyKey" v-if="history.size != 0">
             <p class="top">
-              <span class="title">搜索历史<span class="icon el-icon-delete"> </span></span>
-              <span class="all" v-if="false">查看全部</span>
+              <span class="title"
+                >搜索历史<span class="icon el-icon-delete" @click="clearHistory"> </span
+              ></span>
+              <span
+                :data-nothide="1"
+                class="all"
+                v-if="all"
+                @click="
+                  showAll = true
+                  all = false
+                "
+                >查看全部</span
+              >
             </p>
+            <div
+              class="pieces"
+              @mouseover="changeHistoryIndex"
+              @mouseout="renewHistoryIndex"
+              @click="operateHistory"
+              :class="{ 'show-all': showAll }"
+            >
+              <span
+                :data-val="item"
+                :data-index="index"
+                class="piece"
+                v-for="(item, index) in Array.from(history).reverse()"
+                :key="index"
+              >
+                {{ item }}
+                <i
+                  :data-nothide="1"
+                  :data-del_val="item"
+                  :data-index="index"
+                  class="el-icon-close"
+                  v-show="index == historyIndex"
+                ></i>
+              </span>
+            </div>
           </div>
         </div>
         <div class="searchSuggest" v-else>2</div>
@@ -37,7 +74,7 @@
           <el-avatar :src="userImgUrl"></el-avatar>
         </div>
         <div id="dropdown" class="dropdown" placement="top">
-          <span class="dropdown-link el-icon-arrow-down" @click="dropdown = !dropdown">
+          <span class="dropdown-link el-icon-arrow-down" @click="dropdownLinkClick">
             {{ username }}
           </span>
         </div>
@@ -115,12 +152,20 @@ export default {
       username: '1111',
       dropdown: false,
       searchDropdown: false, //搜索下拉框
-      history: new Set()
+      all: false, //展示全部按钮
+      showAll: false, //是否展示全部
+      history: new Set(), //搜索记录
+      historyKey: 1, //刷新
+      historyIndex: -1 //锁定选择的记录的序号
     }
   },
 
   methods: {
     sendSearchInput() {
+      this.searchDropdown = false
+      this.$refs.input.blur()
+
+      //整理顺序，保存搜索记录
       if (this.history.has(this.searchInput)) {
         this.history.delete(this.searchInput)
       }
@@ -134,6 +179,18 @@ export default {
         query: { k: this.searchInput || undefined }
       })
     },
+    //点击 dropdown-link
+    dropdownLinkClick() {
+      if (this.dropdown == false) {
+        //添加 click 事件，用于收起下拉栏
+        this.dropdown = true
+        document.addEventListener('click', this.dropdownToFalse)
+      } else {
+        this.dropdown = false
+
+        document.removeEventListener('click', this.dropdownToFalse)
+      }
+    },
     //鼠标点击事件，用于收起下拉栏
     dropdownToFalse(e) {
       let dropdownLink = document.querySelector('.dropdown-link')
@@ -146,12 +203,95 @@ export default {
         )
       ) {
         this.dropdown = false
+
+        document.removeEventListener('click', this.dropdownToFalse)
       }
+    },
+    //搜索框获取焦点时
+    inputFocus() {
+      //重置查看全部
+      if (this.showAll) {
+        this.all = false
+        this.showAll = false
+      }
+
+      this.searchDropdown = true
+      this.hideSearchDropdown()
+      if (this.searchInput == '' && !this.showAll) this.piecesOverflow()
+    },
+    //判断历史记录是否溢出
+    piecesOverflow() {
+      this.$nextTick(() => {
+        if (this.history.size !== 0) {
+          let pieces = document.querySelector('.pieces')
+          let lastPiece = pieces.children[pieces.childElementCount - 1]
+          let style = window.getComputedStyle(lastPiece, null)
+          if (
+            lastPiece.offsetTop <
+            pieces.offsetTop + 2 * lastPiece.clientHeight + 4 * parseInt(style.marginTop)
+          ) {
+            //重置 查看全部
+            this.all = false
+            this.showAll = false
+            this.historyKey = 1 - this.historyKey
+          } else {
+            this.all = true
+          }
+        }
+      })
+    },
+    //隐藏搜索下拉栏
+    hideSearchDropdown() {
+      let notHide = e => {
+        let { nothide } = e.target.dataset
+        let searchDropdownMenu = document.querySelector('#search-dropdown-menu')
+        if (!(nothide || e.target.offsetParent == searchDropdownMenu)) {
+          this.searchDropdown = false
+          this.showAll = false
+          document.removeEventListener('click', notHide)
+        }
+      }
+      document.removeEventListener('click', notHide)
+      document.addEventListener('click', notHide)
     },
     //获取历史记录
     getHistory() {
       let historyStr = localStorage.getItem('history')
       if (historyStr != '') this.history = new Set(JSON.parse(historyStr))
+    },
+    //改变  historyIndex
+    changeHistoryIndex(e) {
+      let { index } = e.target.dataset
+      if (index) {
+        this.historyIndex = index
+      }
+    },
+    //鼠标离开时，还原 historyIndex
+    renewHistoryIndex(e) {
+      let { val } = e.target.dataset
+      if (val) {
+        this.historyIndex = -1
+      }
+    },
+    //搜索或删除历史
+    operateHistory(e) {
+      let { val, del_val } = e.target.dataset
+      if (val) {
+        this.historyIndex = -1
+        this.searchInput = val
+        this.sendSearchInput()
+      } else if (del_val) {
+        this.history.delete(del_val)
+        localStorage.setItem('history', JSON.stringify(Array.from(this.history)))
+        this.historyKey = 1 - this.historyKey
+        this.piecesOverflow()
+      }
+    },
+    //清空历史记录
+    clearHistory() {
+      this.history.clear()
+      // this.historyKey = 1 - this.historyKey
+      localStorage.setItem('history', JSON.stringify(Array.from(this.history)))
     }
   },
   created() {
@@ -168,18 +308,12 @@ export default {
     let header = document.querySelector('#header-container')
     //禁止复制
     header.onselectstart = () => false
-
-    //移除与添加 click 事件，用于收起下拉栏
-    document.removeEventListener('click', this.dropdownToFalse)
-    document.addEventListener('click', this.dropdownToFalse)
   }
 }
 </script>
 
 <style lang="less" scoped>
 #header-container {
-  @WP: var(--WP);
-  @HP: var(--HP);
   @themeColor: #ec4141;
 
   position: relative;
@@ -258,9 +392,11 @@ export default {
         .top {
           width: 350px;
           height: 40px;
+          float: left;
 
           .title {
             float: left;
+            height: 40px;
             color: #aaa;
             .icon {
               margin-left: 5px;
@@ -272,6 +408,46 @@ export default {
           }
           .all {
             float: right;
+            color: #aaa;
+            font-size: 12px;
+            cursor: pointer;
+          }
+        }
+        .show-all {
+          height: auto !important;
+          // overflow: visible !important;
+        }
+        .pieces {
+          display: inline-block;
+          margin-top: 10px;
+          width: 350px;
+          height: 70px;
+          overflow: hidden;
+          .piece {
+            @height: 25px;
+            position: relative;
+            display: block;
+            float: left;
+            width: auto;
+            height: @height;
+            line-height: calc(@height - 2px);
+            font-size: 14px;
+            margin: 5px;
+            padding: 0 15px;
+            font-family: '华文粗黑';
+            border: #ddd 1px solid;
+            border-radius: calc(@height / 2);
+            cursor: pointer;
+            i {
+              position: absolute;
+              top: 5px;
+              color: #777;
+            }
+
+            &:hover {
+              background-color: #eee;
+              color: #777;
+            }
           }
         }
       }

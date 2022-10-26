@@ -7,6 +7,10 @@ const state = {
 }
 
 const mutations = {
+  //清空搜索结果
+  ClEARSEARCHRES(state) {
+    state.searchResult = []
+  },
   //依据搜索内容获取搜索结果
   GETSEARCHRES(state, searchResult) {
     state.searchResult = searchResult
@@ -39,6 +43,7 @@ const mutations = {
 
 const actions = {
   async getSearchRes({ commit }, { searchInput }) {
+    commit('ClEARSEARCHRES')
     let { data: res } = await get_search_res({ keywords: searchInput })
     if (res.code === 200) {
       // this.searchResult = res.result
