@@ -1,5 +1,5 @@
 <template>
-  <div id="header-container">
+  <div id="header-container" :style="{}">
     <div id="logo">
       <a href="#/index"></a>
     </div>
@@ -130,18 +130,22 @@
       </transition>
       <div class="menu-demo">
         <ul>
-          <li class="el-icon-brush menu-item" title="主题"></li>
+          <li class="el-icon-brush menu-item" title="皮肤" @click="skinItemClick"></li>
           <li class="el-icon-message menu-item" title="消息"></li>
           <li class="el-icon-setting menu-item" title="设置"></li>
           <li class="el-icon-document menu-item" title="日志"></li>
         </ul>
       </div>
+      <transition name="skin">
+        <SkinVue class="skin" v-if="skin" @hide="skin = false"></SkinVue>
+      </transition>
     </div>
   </div>
 </template>
 
 <script>
 import bus from '@/EventBus'
+import SkinVue from '@/components/Header/Skin'
 
 export default {
   name: 'HeaderVue',
@@ -156,10 +160,11 @@ export default {
       showAll: false, //是否展示全部
       history: new Set(), //搜索记录
       historyKey: 1, //刷新
-      historyIndex: -1 //锁定选择的记录的序号
+      historyIndex: -1, //锁定选择的记录的序号
+      skin: false //皮肤组件是否出现
     }
   },
-
+  components: { SkinVue },
   methods: {
     sendSearchInput() {
       this.searchDropdown = false
@@ -174,7 +179,7 @@ export default {
 
       bus.$emit('toSearch', this.searchInput)
       this.$router.push({
-        name: 'search',
+        name: 'song',
         params: { keyword: this.searchInput || undefined },
         query: { k: this.searchInput || undefined }
       })
@@ -292,6 +297,11 @@ export default {
       this.history.clear()
       // this.historyKey = 1 - this.historyKey
       localStorage.setItem('history', JSON.stringify(Array.from(this.history)))
+    },
+    //点击 skin按钮
+    skinItemClick() {
+      if (this.skin == false) this.skin = true
+      // this.skin = !this.skin
     }
   },
   created() {
@@ -314,15 +324,14 @@ export default {
 
 <style lang="less" scoped>
 #header-container {
-  @themeColor: #ec4141;
-
   position: relative;
   padding: 0 40px;
   display: flex;
   order: 1;
   height: 60px;
   line-height: 60px;
-  background-color: #ec4141;
+  background-color: @primaryColor;
+  // background-color: #ec4141;
 
   #logo {
     float: left;
@@ -351,7 +360,7 @@ export default {
       line-height: 16px;
       border-radius: 16px !important;
       border: 0 !important;
-      background-color: rgba(230, 0, 38, 0.5);
+      background-color: @primaryColor;
       font-size: 13px;
       font-weight: 600;
       color: white !important;
@@ -452,27 +461,26 @@ export default {
         }
       }
     }
-  }
+    &-enter {
+      height: 0;
+    }
+    &-enter-to {
+      height: 750px;
+    }
 
-  .search-dropdown-menu-enter {
-    height: 0;
-  }
-  .search-dropdown-menu-enter-to {
-    height: 750px;
-  }
+    &-enter-active {
+      transition: all 0.3s linear;
+    }
+    &-leave {
+      height: 750px;
+    }
+    &-leave-to {
+      height: 0;
+    }
 
-  .search-dropdown-menu-enter-active {
-    transition: all 0.3s linear;
-  }
-  .search-dropdown-menu-leave {
-    height: 750px;
-  }
-  .search-dropdown-menu-leave-to {
-    height: 0;
-  }
-
-  .search-dropdown-menu-leave-active {
-    transition: all 0.3s linear;
+    &-leave-active {
+      transition: all 0.3s linear;
+    }
   }
 
   #function-area {
@@ -560,28 +568,29 @@ export default {
           }
         }
       }
+
+      &-enter {
+        height: 0;
+      }
+      &-enter-to {
+        height: 400px;
+      }
+
+      &-enter-active {
+        transition: all 0.3s linear;
+      }
+      &-leave {
+        height: 400px;
+      }
+      &-leave-to {
+        height: 0;
+      }
+
+      &-leave-active {
+        transition: all 0.3s linear;
+      }
     }
 
-    .my-dropdown-menu-enter {
-      height: 0;
-    }
-    .my-dropdown-menu-enter-to {
-      height: 400px;
-    }
-
-    .my-dropdown-menu-enter-active {
-      transition: all 0.3s linear;
-    }
-    .my-dropdown-menu-leave {
-      height: 400px;
-    }
-    .my-dropdown-menu-leave-to {
-      height: 0;
-    }
-
-    .my-dropdown-menu-leave-active {
-      transition: all 0.3s linear;
-    }
     .menu-demo {
       margin-top: -1px;
       float: right;
@@ -597,8 +606,31 @@ export default {
         cursor: pointer;
       }
       .menu-item:hover {
-        color: #ec4141 !important;
+        color: @primaryColor!important;
         background-color: #fff;
+      }
+    }
+    .skin {
+      position: relative;
+      top: 70px;
+      left: 220px;
+      &-enter {
+        opacity: 0;
+      }
+      &-enter-to {
+        opacity: 1;
+      }
+      &-enter-active {
+        transition: all 0.3s linear;
+      }
+      &-leave {
+        opacity: 1;
+      }
+      &-leave-to {
+        opacity: 0;
+      }
+      &-leave-active {
+        transition: all 0.3s linear;
       }
     }
   }

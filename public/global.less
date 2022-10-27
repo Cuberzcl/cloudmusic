@@ -1,5 +1,14 @@
-@themeColor: #aaa;
+@primaryColor: var(--primaryColor);
+
+@primaryColorh: var(--primaryColorH);
 
 @liHeight: 40px;
 
 @my-font-family: '华文中宋';
+
+//文字渐变色
+.wordGradientColor(@color1,@color2) {
+  background-image: -webkit-gradient(linear, left 0, right 0, from(@color1), to(@color2));
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

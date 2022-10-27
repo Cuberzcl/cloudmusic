@@ -6,7 +6,7 @@
         :audio-list="audioList.map(elm => elm.url)"
         :theme-color="controlsColor"
         :progress-interval="50"
-        :show-play-button="true"
+        :show-play-button="audioList[0].url != ''"
         :show-volume-button="false"
         :show-prev-button="false"
         :show-next-button="false"
@@ -57,7 +57,7 @@ export default {
       speed: 10, //旋转速度
       time: 0, //记录定时器
       setTime: 0, //记录储存播放时间的定时器
-      controlsColor: 'pink', //主题颜色
+      controlsColor: this.Global.theme.color.primaryColor, //主题颜色
       volume: 50, //音量
       showSlider: false, //是否出现音量滑块
       currentAudioName: '',
@@ -77,8 +77,8 @@ export default {
       if (tempVolume !== 0) {
         this.volume = 1
         this.volumeTime = setInterval(() => {
-          this.volume += 5
-        }, 5000 / tempVolume)
+          this.volume += 1
+        }, 1000 / tempVolume)
 
         setTimeout(() => {
           this.volume = tempVolume
@@ -110,12 +110,12 @@ export default {
 
       let tempVolume = this.volume
       this.volumeTime = setInterval(() => {
-        this.volume -= 5
+        this.volume -= 1
         if (this.volume < 5) {
           clearInterval(this.volumeTime)
-          this.volumeTime = -5
+          this.volumeTime = 1
         }
-      }, 5000 / tempVolume)
+      }, 1000 / tempVolume)
 
       setTimeout(() => {
         audio.pause()
@@ -179,6 +179,26 @@ export default {
   },
   created() {},
   mounted() {
+    //初始主题图片
+    let renewPic = () => {
+      let play = document.querySelector('.audio__progress-point')
+      let volume = document.querySelector('.el-slider__button')
+      play.style.backgroundImage =
+        'url(' + require('@/assets/theme/' + this.Global.theme.themeName + '/play.png') + ')'
+      volume.style.backgroundImage =
+        'url(' + require('@/assets/theme/' + this.Global.theme.themeName + '/volume.png') + ')'
+    }
+
+    let remountAudioControl = () => {
+      this.controlsColor = this.Global.theme.color.primaryColor
+      renewPic()
+    }
+    //重新渲染
+    bus.$off('remount', remountAudioControl)
+    bus.$on('remount', remountAudioControl)
+
+    renewPic()
+
     this.setVolume()
 
     let songData = localStorage.getItem('songData')
@@ -241,7 +261,6 @@ export default {
       .audio__btn-wrap {
         margin-bottom: 0;
         // .audio__play-icon {
-        // }
         .audio__play-volume-wrap {
           margin-bottom: 10px;
           height: 100px;
@@ -264,7 +283,6 @@ export default {
           height: 20px;
           background-color: transparent !important;
           box-shadow: 0 0 0 0 !important;
-          background: url('./images/cherry-blossom1.png');
           background-size: contain;
           &:after {
             display: none;
@@ -278,12 +296,12 @@ export default {
         .audio__current-time {
           position: absolute;
           left: -45px;
-          color: pink;
+          color: @primaryColor;
         }
         .audio__duration {
           position: absolute;
           right: -42px;
-          color: pink;
+          color: @primaryColor;
         }
       }
     }
@@ -299,14 +317,14 @@ export default {
         position: absolute;
         left: 17px;
         top: 20px;
-        color: pink;
+        color: @primaryColor;
         transform: scale(1.6, 2.4);
       }
       .icon1 {
         position: absolute;
         left: 17px;
         top: 20px;
-        color: pink;
+        color: @primaryColor;
         transform: scale(1.6, 2.4);
       }
       .block {
@@ -322,7 +340,7 @@ export default {
 
           .el-slider__bar {
             width: 100%;
-            background-color: pink;
+            background-color: @primaryColor;
           }
         }
         /deep/ .el-slider__button-wrapper {
@@ -335,7 +353,7 @@ export default {
             height: 20px;
             cursor: default;
             border: 0;
-            background: url('./images/cherry-blossom3.png');
+            background-color: transparent !important;
             background-size: cover;
             transition: none;
           }

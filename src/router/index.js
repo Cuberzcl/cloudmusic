@@ -21,6 +21,8 @@ import Cloud from '@/views/Index/MyMusic/Cloud'
 import Podcast from '@/views/Index/MyMusic/Podcast'
 import Collection from '@/views/Index/MyMusic/Collection'
 
+import Song from '@/views/Index/Search/Song'
+
 Vue.use(VueRouter)
 let originPush = VueRouter.prototype.push
 let originReplace = VueRouter.prototype.replace
@@ -101,9 +103,15 @@ export default new VueRouter({
             }
           ]
         },
-        { path: 'search/:keyword?', component: Search, name: 'search' }
+        {
+          path: 'search',
+          component: Search,
+          redirect: 'search/song',
+          name: 'search',
+          children: [{ path: 'song/:keyword?', component: Song, name: 'song' }]
+        }
       ]
     },
-    { path: '/play', component: Play }
+    { path: '/play', component: Play, name: 'play' }
   ]
 })

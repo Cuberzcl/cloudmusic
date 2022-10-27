@@ -195,7 +195,7 @@ export default {
         line-height: 310px;
         text-align: center;
         border-radius: 155px;
-        background-color: #dedede;
+        background-color: @primaryColor;
         transform: rotate(calc(@rad*1rad));
         .black {
           display: inline-block;

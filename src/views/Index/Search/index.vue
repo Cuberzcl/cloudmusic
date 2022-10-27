@@ -2,26 +2,16 @@
   <div class="search-container">
     <h2>搜索 {{ $route.params.keyword }}</h2>
     <div class="transition-box">
-      <SongTableVue :songsList="songsList" v-if="songsList"></SongTableVue>
+      <router-view></router-view>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
   name: 'SearchVue',
   data() {
-    return {
-      show: false
-    }
-  },
-  computed: {
-    ...mapState({
-      songsList: state => state.search.searchResult.songs,
-      audioList: state => state.search.audioList
-    })
+    return {}
   },
   watch: {
     $route() {
@@ -41,6 +31,7 @@ export default {
   h2 {
     margin: 20px;
     font-family: '楷体';
+    font-weight: bold;
   }
   a {
     text-decoration: none;

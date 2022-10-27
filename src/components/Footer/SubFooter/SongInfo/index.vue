@@ -87,17 +87,13 @@ export default {
     }
   },
   created() {
-    bus.$off('waitingPic')
-    bus.$on('waitingPic', () => {
-      this.songData.al.picUrl = '@/assets/waiting.png'
-      this.picShow = true
-    })
-
     bus.$off('showSongInfo')
     bus.$on('showSongInfo', data => {
       this.songData = data
 
       this.$nextTick(() => {
+        this.picShow = true
+        this.$forceUpdate()
         if (this.likesId.indexOf(data.id) !== -1) {
           this.liked = true
         } else {
@@ -240,7 +236,7 @@ export default {
           color: #d0fff0;
         }
         .unlike {
-          color: red;
+          color: @primaryColor;
         }
       }
       .hoverPointer:hover {

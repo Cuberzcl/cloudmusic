@@ -181,7 +181,7 @@ export default {
       }
       .right {
         right: -20px;
-        color: pink;
+        color: @primaryColor;
         font-size: 24px;
         cursor: pointer;
         border-image: linear-gradient(to left, aqua, yellow) 30 30;

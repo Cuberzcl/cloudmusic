@@ -2,7 +2,12 @@
   <div
     id="app"
     :key="key"
-    :style="{ '--WP': Global.widthProportion, '--HP': Global.heightProportion }"
+    :style="{
+      '--WP': Global.widthProportion,
+      '--HP': Global.heightProportion,
+      '--primaryColor': Global.theme.color.primaryColor,
+      '--primaryColorH': Global.theme.color.primaryColorH
+    }"
   >
     <transition name="wel">
       <div class="wel" v-if="welcome">
@@ -36,7 +41,23 @@ export default {
       bus.$emit('prePlay')
     }
   },
+  created() {
+    let primaryColor = localStorage.getItem('primaryColor')
+    let theme = localStorage.getItem('theme')
+    if (theme) {
+      this.Global.theme.changeTheme(theme)
+    } else if (primaryColor) {
+      this.Global.theme.changePrimaryColor(primaryColor)
+    }
+  },
   mounted() {
+    let remountApp = () => {
+      this.$forceUpdate()
+    }
+    //重新渲染
+    bus.$off('remount', remountApp)
+    bus.$on('remount', remountApp)
+
     let w = window.innerWidth / 1805
     let h = window.innerHeight / 937
     this.Global.changeProportion(w, h)

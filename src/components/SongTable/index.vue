@@ -61,7 +61,6 @@ export default {
       //利用vuex发送与获取歌曲
       let { songid, index } = event.target.dataset
       if (!songid) return
-      bus.$emit('waitingPic')
 
       this.$store.dispatch('getSongUrl', { id: songid })
 
@@ -185,7 +184,7 @@ export default {
             font-size: 40px;
             left: 5px;
 
-            color: pink;
+            color: @primaryColor;
           }
         }
       }

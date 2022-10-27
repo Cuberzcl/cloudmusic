@@ -115,15 +115,14 @@ export default {
     color: black;
     text-decoration: none;
     display: block;
+    &:hover {
+      color: black;
+    }
   }
   .changeBGC {
     background-color: #f6f6f7;
   }
-  .color(@color1,@color2) {
-    background-image: -webkit-gradient(linear, left 0, right 0, from(@color1), to(@color2));
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
+
   .my-ul {
     li {
       width: 100%;
@@ -141,7 +140,7 @@ export default {
           margin: 5px;
           position: relative;
           top: 3px;
-          .color(pink,#ffffaa);
+          .wordGradientColor(pink,#ffffaa);
         }
         &:hover {
           .changeBGC();
