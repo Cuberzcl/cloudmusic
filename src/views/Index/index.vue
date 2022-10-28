@@ -44,11 +44,13 @@ export default {
   display: flex;
   order: 2;
   height: 800px;
+
   .view-container {
     flex: auto;
     overflow: hidden;
+    background-color: @indexViewColor;
     .view {
-      height: 795px;
+      height: 800px;
       overflow: auto;
       position: relative;
       z-index: 0;

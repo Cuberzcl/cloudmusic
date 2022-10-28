@@ -31,7 +31,7 @@
           <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
             <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
           </td>
-          <td :data-songId="item.id" :data-index="index" class="" style="min-width: 100px">
+          <td :data-songId="item.id" :data-index="index" class="time" style="min-width: 100px">
             {{ transformTime(item.dt) }}
           </td>
         </tr>
@@ -124,10 +124,12 @@ export default {
 
 <style lang="less" scoped>
 .song-table-container {
-  @first-color: #fffff5;
-  @second-color: #fffdff;
+  @first-color: #fffffa;
+  @second-color: #fffaff;
   @selected-color: #f0ffff;
-  // font-weight: bold;
+  @direction: to right;
+  // font-weight: bold;;
+  background-color: #fff;
   h2 {
     margin-left: 20px;
     margin-bottom: 20px;
@@ -140,6 +142,15 @@ export default {
     cursor: pointer;
     color: hotpink;
   }
+  .line-color(@color) {
+    background: linear-gradient(
+      @direction,
+      @tableColor,
+      @color 1%,
+      darken(@color, 1%) 90%,
+      @tableColor 99%
+    );
+  }
 
   .song-table {
     margin-top: 20px;
@@ -151,16 +162,22 @@ export default {
       font-family: '宋体';
     }
     .current {
-      background-color: @selected-color !important;
+      .line-color(@selected-color) !important;
+      .time {
+        border-bottom: 1px solid darken(@selected-color, 10%);
+      }
       td:nth-child(n + 2) {
-        border-left: 2px solid @selected-color !important;
+        border-left: 0px solid transparent !important;
       }
     }
     .song-line {
       width: auto;
       height: 40px;
       line-height: 40px;
-      background-color: @second-color;
+      .line-color(@second-color);
+      .time {
+        border-bottom: 1px solid darken(@second-color, 10%);
+      }
       td {
         position: relative;
         height: 40px;
@@ -189,7 +206,7 @@ export default {
         }
       }
       td:nth-child(n + 2) {
-        border-left: 2px solid @second-color;
+        border-left: 0px solid transparent;
       }
       .index {
         width: 100px;
@@ -200,9 +217,12 @@ export default {
       }
     }
     .song-line:nth-child(odd) {
-      background-color: @first-color;
+      .line-color(@first-color);
+      .time {
+        border-bottom: 1px solid darken(@first-color, 10%);
+      }
       td:nth-child(n + 2) {
-        border-left: 2px solid @first-color;
+        border-left: 0px solid transparent;
       }
       &:hover {
         .current();

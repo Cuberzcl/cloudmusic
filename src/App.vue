@@ -6,7 +6,9 @@
       '--WP': Global.widthProportion,
       '--HP': Global.heightProportion,
       '--primaryColor': Global.theme.color.primaryColor,
-      '--primaryColorH': Global.theme.color.primaryColorH
+      '--primaryColorH': Global.theme.color.primaryColorH,
+      '--indexViewColor': Global.theme.color.indexViewColor,
+      '--tableColor': Global.theme.color.tableColor
     }"
   >
     <transition name="wel">
@@ -79,6 +81,7 @@ export default {
   @HP: var(--HP);
   @min: min(@WP, @HP);
 
+  // background-color: red;
   width: 1805px;
   height: 937px;
   transform: scale(@min);

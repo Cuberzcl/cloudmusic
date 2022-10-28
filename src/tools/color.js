@@ -1,9 +1,10 @@
 export default {
-  primaryColor: 'rgba(255,192,203,0.8)',
+  primaryColor: 'rgba(245, 153, 184,0.8)',
   primaryColorH: '#fff',
+  //rgba(255,165,0,0.8)
+  indexViewColor: '',
 
-  tableColor1: '#fffdff',
-  tableColor2: '#f0ffff',
+  tableColor: 'rgba(255,20,147,1)',
 
   //rgba 转 十六进制
   hexify() {
