@@ -1,5 +1,9 @@
 import _request from './request'
 
+//请求搜索建议
+export const get_search_suggest = params =>
+  _request({ url: '/search/suggest', method: 'get', params })
+
 //请求搜索结果
 export const get_search_res = params => _request({ url: '/cloudsearch', method: 'get', params })
 

@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import SongInfoVue from './SubFooter/SongInfo'
-import AudioControlVue from './SubFooter/AudioControl'
-import OtherChangeVue from './SubFooter/OtherChange'
+import SongInfoVue from './SongInfo'
+import AudioControlVue from './AudioControl'
+import OtherChangeVue from './OtherChange'
 import bus from '@/EventBus'
 import { mapState } from 'vuex'
 

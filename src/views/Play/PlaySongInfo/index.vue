@@ -41,7 +41,7 @@ export default {
   }
   .hoverPointer:hover {
     cursor: pointer;
-    color: blueviolet;
+    color: @primaryColor;
   }
 }
 </style>

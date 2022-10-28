@@ -19,17 +19,25 @@
             <span v-if="playIndex != index">{{ transformIndex(index + 1) }}</span>
             <span v-else class="el-icon-star-on"></span>
           </td>
-          <td :data-songId="item.id" :data-index="index" class="" style="max-width: 800px">
-            {{ item.name }}
-          </td>
+          <td
+            :data-songId="item.id"
+            :data-index="index"
+            class=""
+            style="max-width: 800px"
+            v-html="highlightKeyword(item.name)"
+          ></td>
           <td class="" style="min-width: 300px" :data-songId="item.id" :data-index="index">
             <span v-for="(item2, index) in item.ar" :key="item2.id + index">
-              <span class="hoverPointer" @click="arRouter">{{ item2.name }}</span
+              <span
+                class="hoverPointer"
+                @click="arRouter"
+                v-html="highlightKeyword(item2.name)"
+              ></span
               ><span v-if="index !== item.ar.length - 1" style="font-weight: bolder"> / </span>
             </span>
           </td>
           <td style="min-width: 300px" :data-songId="item.id" :data-index="index">
-            <i @click="alRouter" class="hoverPointer">{{ item.al.name }}</i>
+            <i @click="alRouter" class="hoverPointer" v-html="highlightKeyword(item.al.name)"></i>
           </td>
           <td :data-songId="item.id" :data-index="index" class="time" style="min-width: 100px">
             {{ transformTime(item.dt) }}
@@ -57,6 +65,20 @@ export default {
     }
   },
   methods: {
+    //高亮搜索建议中的关键字
+    highlightKeyword(s) {
+      if (!bus.searchInput || bus.searchInput == '') return s
+      let res = new RegExp(bus.searchInput, 'i')
+      let newS = s.replace(
+        res,
+        '<span style="color:' +
+          this.Global.theme.color.primaryColor +
+          '">' +
+          bus.searchInput +
+          '</span>'
+      )
+      return newS
+    },
     sendChosenSong(event) {
       //利用vuex发送与获取歌曲
       let { songid, index } = event.target.dataset
@@ -140,7 +162,7 @@ export default {
   }
   .hoverPointer:hover {
     cursor: pointer;
-    color: hotpink;
+    color: @primaryColorDarken;
   }
   .line-color(@color) {
     background: linear-gradient(

@@ -170,14 +170,20 @@ export default {
         width: 100px;
         line-height: 50px;
         text-align: center;
-        border-bottom: aquamarine 1px solid;
+        border-bottom: @primaryColor 1px solid;
       }
       .left {
         left: -20px;
         font-size: 16px;
         font-family: '仿宋';
         font-weight: bold;
+
         border-image: linear-gradient(to right, aqua, yellow) 30 30;
+        transition-property: color;
+        transition-duration: 0.2s;
+        &:hover {
+          color: @primaryColor;
+        }
       }
       .right {
         right: -20px;
@@ -272,6 +278,6 @@ export default {
 
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 
-  background-color: #aff;
+  background-color: @primaryColorDarken;
 }
 </style>

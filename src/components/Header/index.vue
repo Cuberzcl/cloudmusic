@@ -11,6 +11,7 @@
         v-model="searchInput"
         size="mini"
         @focus="inputFocus"
+        @input="getSearchSuggest"
         ref="input"
       >
       </el-input>
@@ -65,7 +66,15 @@
             </div>
           </div>
         </div>
-        <div class="searchSuggest" v-else>2</div>
+        <div class="searchSuggest" v-if="searchInput != '' && searchSuggest">
+          <div class="song" v-if="searchSuggest.songs">
+            <ul>
+              <li v-for="item in searchSuggest.songs" :key="item.id">
+                <p v-html="highlightKeyword(item.name)"></p>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </transition>
     <div id="function-area">
@@ -146,12 +155,15 @@
 <script>
 import bus from '@/EventBus'
 import SkinVue from '@/components/Header/Skin'
+import _ from 'lodash'
+import { get_search_suggest } from '@/api'
 
 export default {
   name: 'HeaderVue',
   data() {
     return {
       searchInput: '',
+      searchSuggest: {},
       userImgUrl: require('@/assets/白花.png'),
       username: '1111',
       dropdown: false,
@@ -183,6 +195,7 @@ export default {
         params: { keyword: this.searchInput || undefined },
         query: { k: this.searchInput || undefined }
       })
+      bus.searchInput = this.searchInput
     },
     //点击 dropdown-link
     dropdownLinkClick() {
@@ -245,6 +258,33 @@ export default {
         }
       })
     },
+    //获取搜索建议
+    getSearchSuggest: _.debounce(
+      async function () {
+        if (this.searchInput == '') return
+        let { data: res } = await get_search_suggest({ keywords: this.searchInput })
+        if (res.code === 200) {
+          this.searchSuggest = res.result
+        } else {
+          console.log('err')
+        }
+      },
+      500,
+      { trailing: true }
+    ),
+    //高亮搜索建议中的关键字
+    highlightKeyword(s) {
+      let res = new RegExp(this.searchInput, 'i')
+      let newS = s.replace(
+        res,
+        '<span style="color:' +
+          this.Global.theme.color.primaryColor +
+          '">' +
+          this.searchInput +
+          '</span>'
+      )
+      return newS
+    },
     //隐藏搜索下拉栏
     hideSearchDropdown() {
       let notHide = e => {
@@ -284,7 +324,9 @@ export default {
       if (val) {
         this.historyIndex = -1
         this.searchInput = val
+        bus.searchInput = val
         this.sendSearchInput()
+        this.getSearchSuggest()
       } else if (del_val) {
         this.history.delete(del_val)
         localStorage.setItem('history', JSON.stringify(Array.from(this.history)))

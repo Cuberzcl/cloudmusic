@@ -6,7 +6,7 @@
       '--WP': Global.widthProportion,
       '--HP': Global.heightProportion,
       '--primaryColor': Global.theme.color.primaryColor,
-      '--primaryColorH': Global.theme.color.primaryColorH,
+      '--primaryColorDarken': Global.theme.color.primaryColorDarken,
       '--indexViewColor': Global.theme.color.indexViewColor,
       '--tableColor': Global.theme.color.tableColor
     }"

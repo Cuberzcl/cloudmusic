@@ -80,18 +80,18 @@ export default {
         }
       ], //主题
       predefineColors: [
-        '#f0f0f0',
-        '#ff4500',
-        '#ff8c00',
-        '#ffd700',
-        '#90ee90',
-        '#00ced1',
-        '#1e90ff',
+        'rgba(240,240,240,0.8)',
+        'rgba(236,65,65,0.8)',
+        'rgba(255,140,0,0.8)',
+        'rgba(255,215,0,0.8)',
+        'rgba(144,238,144,0.8)',
+        'rgba(0,206,209,0.8)',
+        'rgba(30,144,255,0.8)',
         'rgba(255, 69, 0, 0.68)',
-        'rgb(255, 120, 0)',
-        'hsl(181, 100%, 37%)',
-        'hsla(209, 100%, 56%, 0.73)',
-        'pink'
+        'rgba(255, 120, 0,0.8)',
+        'rgba(105, 235, 255,0.8)',
+        'rgba(255,165,0,0.8)',
+        'rgba(245, 153, 184,0.8)'
       ],
       isPre: false, //是否是预选颜色
       preIndex: localStorage.getItem('preIndex') || -1, //选中判断
@@ -215,7 +215,7 @@ export default {
         }
         .el-tabs__item:hover,
         .is-active {
-          color: @primaryColorh;
+          color: @primaryColor;
         }
       }
     }

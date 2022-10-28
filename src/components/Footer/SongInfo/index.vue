@@ -3,7 +3,11 @@
     <div class="alPic">
       <img :src="songData.al.picUrl" alt="" v-if="picShow" />
       <div class="mask" @click="changeRouter()">
-        <i class="el-icon-arrow-up" v-if="this.$route.path != '/play'"></i>
+        <i
+          class="el-icon-arrow-up"
+          :style="{ color: Global.theme.color.primaryColor }"
+          v-if="this.$route.path != '/play'"
+        ></i>
         <i class="el-icon-arrow-down" v-else></i>
       </div>
     </div>
@@ -13,7 +17,7 @@
           <p class="songName" @click="changeRouter()">
             {{ songData.name }}
           </p>
-          <div class="little-like">
+          <div class="little-like" v-if="songData">
             <span
               @click="like"
               title="喜欢"
@@ -232,6 +236,7 @@ export default {
         display: inline-block;
         font-size: 18px;
         font-family: '华文细黑';
+        cursor: pointer;
         .like {
           color: #d0fff0;
         }
@@ -241,7 +246,7 @@ export default {
       }
       .hoverPointer:hover {
         cursor: pointer;
-        color: hotpink;
+        color: @primaryColorDarken;
       }
 
       a {

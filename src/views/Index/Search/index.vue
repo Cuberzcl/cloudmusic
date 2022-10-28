@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import bus from '@/EventBus'
 export default {
   name: 'SearchVue',
   data() {
@@ -20,6 +21,9 @@ export default {
   },
   beforeCreate() {
     this.$store.dispatch('getSearchRes', { searchInput: this.$route.params.keyword })
+  },
+  beforeDestroy() {
+    bus.searchInput = ''
   }
 }
 </script>
