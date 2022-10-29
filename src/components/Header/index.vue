@@ -66,12 +66,41 @@
             </div>
           </div>
         </div>
-        <div class="searchSuggest" v-if="searchInput != '' && searchSuggest">
+        <div class="search-suggest" v-if="searchInput != '' && searchSuggest">
           <div class="song" v-if="searchSuggest.songs">
+            <p class="title">单曲</p>
             <ul>
               <li v-for="item in searchSuggest.songs" :key="item.id">
-                <p v-html="highlightKeyword(item.name)"></p>
+                <p>
+                  <span v-html="highlightKeyword(item.name)"></span>&nbsp;&nbsp;-
+                  <span
+                    v-for="ar in item.artists"
+                    :key="ar.id"
+                    v-html="highlightKeyword(ar.name) + ' '"
+                  ></span>
+                </p>
               </li>
+            </ul>
+          </div>
+          <div class="artist" v-if="searchSuggest.artists">
+            <p class="title">歌手</p>
+            <ul>
+              <li v-for="item in searchSuggest.artists" :key="item.id">
+                <p>
+                  <span v-html="highlightKeyword(item.name)"></span>
+                </p>
+              </li>
+            </ul>
+          </div>
+          <div class="album" v-if="searchSuggest.albums">
+            <p class="title">专辑</p>
+            <ul>
+              <li v-for="item in searchSuggest.albums" :key="item.id">
+                <p>
+                  <span v-html="highlightKeyword(item.name)"></span>
+                </p>
+              </li>
+              建设中...
             </ul>
           </div>
         </div>
@@ -275,14 +304,7 @@ export default {
     //高亮搜索建议中的关键字
     highlightKeyword(s) {
       let res = new RegExp(this.searchInput, 'i')
-      let newS = s.replace(
-        res,
-        '<span style="color:' +
-          this.Global.theme.color.primaryColor +
-          '">' +
-          this.searchInput +
-          '</span>'
-      )
+      let newS = s.replace(res, '<span class="keywords">' + this.searchInput + '</span>')
       return newS
     },
     //隐藏搜索下拉栏
@@ -499,6 +521,53 @@ export default {
               background-color: #eee;
               color: #777;
             }
+          }
+        }
+      }
+    }
+
+    .search-suggest {
+      width: 400px;
+      .title {
+        margin: 0 auto;
+        width: 300px;
+        height: 45px;
+        line-height: 45px;
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+        color: @primaryColor;
+      }
+      /deep/ li {
+        width: 400px;
+        height: 45px;
+        line-height: 45px;
+        margin: 0 auto;
+        overflow: hidden;
+        cursor: pointer;
+        &:hover {
+          background-color: @primaryColorDarken;
+          .keywords {
+            color: #fff;
+          }
+        }
+        p {
+          width: 300px;
+          height: 45px;
+          line-height: 45px;
+          text-align: left;
+          margin: 0 auto;
+          font-size: 15px;
+          /* 默认值为normal  自动换行 */
+          white-space: nowrap;
+
+          /* 2.超出部分隐藏 */
+          overflow: hidden;
+
+          /* 3.文字用省略号代替超出的部分 */
+          text-overflow: ellipsis;
+          .keywords {
+            color: @primaryColorDarken;
           }
         }
       }
