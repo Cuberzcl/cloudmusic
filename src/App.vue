@@ -8,7 +8,8 @@
       '--primaryColor': Global.theme.color.primaryColor,
       '--primaryColorDarken': Global.theme.color.primaryColorDarken,
       '--indexViewColor': Global.theme.color.indexViewColor,
-      '--tableColor': Global.theme.color.tableColor
+      '--tableColor': Global.theme.color.tableColor,
+      '--primaryFontFamily': Global.theme.font.primaryFontFamily
     }"
   >
     <transition name="wel">

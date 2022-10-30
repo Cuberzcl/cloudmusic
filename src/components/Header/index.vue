@@ -68,7 +68,7 @@
         </div>
         <div class="search-suggest" v-if="searchInput != '' && searchSuggest">
           <div class="song" v-if="searchSuggest.songs">
-            <p class="title">单曲</p>
+            <p class="title"><i class="glyphicon glyphicon-music"></i><span> 单曲</span></p>
             <ul>
               <li v-for="item in searchSuggest.songs" :key="item.id">
                 <p>
@@ -83,7 +83,7 @@
             </ul>
           </div>
           <div class="artist" v-if="searchSuggest.artists">
-            <p class="title">歌手</p>
+            <p class="title"><i class="glyphicon glyphicon-user"></i><span> 歌手</span></p>
             <ul>
               <li v-for="item in searchSuggest.artists" :key="item.id">
                 <p>
@@ -93,14 +93,13 @@
             </ul>
           </div>
           <div class="album" v-if="searchSuggest.albums">
-            <p class="title">专辑</p>
+            <p class="title"><i class="glyphicon glyphicon-cd"></i><span> 专辑</span></p>
             <ul>
               <li v-for="item in searchSuggest.albums" :key="item.id">
                 <p>
                   <span v-html="highlightKeyword(item.name)"></span>
                 </p>
               </li>
-              建设中...
             </ul>
           </div>
         </div>
@@ -530,13 +529,29 @@ export default {
       width: 400px;
       .title {
         margin: 0 auto;
+        overflow: hidden;
         width: 300px;
         height: 45px;
         line-height: 45px;
         text-align: left;
-        font-size: 16px;
-        font-weight: bold;
+        font-size: 18px;
         color: @primaryColor;
+        font-family: @primaryFontFamily;
+        span {
+          cursor: pointer;
+          transition-property: color font-size;
+          transition-duration: 0.3s;
+          &:hover {
+            font-size: 20px;
+            color: @tableColor;
+          }
+        }
+        i {
+          height: 45px;
+          line-height: 45px;
+          position: relative;
+          top: 3.5px;
+        }
       }
       /deep/ li {
         width: 400px;
