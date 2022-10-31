@@ -16,6 +16,24 @@
       >
       </el-input>
     </div>
+    <el-row class="router"
+      ><el-button
+        icon="el-icon-arrow-left "
+        class="btn"
+        size="mini"
+        circle
+        :disabled="backStack.length == 1"
+        @click="goBack"
+      ></el-button>
+      <el-button
+        icon="el-icon-arrow-right "
+        class="btn"
+        size="mini"
+        circle
+        :disabled="forwardStack.length == 0"
+        @click="goForward"
+      ></el-button
+    ></el-row>
     <transition name="search-dropdown-menu">
       <div
         :data-nothide="1"
@@ -173,6 +191,7 @@
           <li class="el-icon-document menu-item" title="日志"></li>
         </ul>
       </div>
+      <!-- 皮肤板块 -->
       <transition name="skin">
         <SkinVue class="skin" v-if="skin" @hide="skin = false"></SkinVue>
       </transition>
@@ -195,6 +214,9 @@ export default {
       userImgUrl: require('@/assets/白花.png'),
       username: '1111',
       dropdown: false,
+      isRouter: false, //判断是否在前进后退
+      backStack: [this.$route.path], //后退栈
+      forwardStack: [], //前进栈
       searchDropdown: false, //搜索下拉框
       all: false, //展示全部按钮
       showAll: false, //是否展示全部
@@ -285,6 +307,20 @@ export default {
           }
         }
       })
+    },
+    //后退
+    goBack() {
+      this.isRouter = true
+      this.$router.back()
+      this.forwardStack.unshift(this.backStack[0])
+      this.backStack.shift()
+    },
+    //前进
+    goForward() {
+      this.isRouter = true
+      this.$router.forward()
+      this.backStack.unshift(this.forwardStack[0])
+      this.forwardStack.shift()
     },
     //获取搜索建议
     getSearchSuggest: _.debounce(
@@ -381,6 +417,15 @@ export default {
     let header = document.querySelector('#header-container')
     //禁止复制
     header.onselectstart = () => false
+  },
+  watch: {
+    //监测路由路径变化，更新backStack和forwardStack，用于配合前进后退
+    '$route.path'(nv) {
+      if (this.isRouter) return (this.isRouter = false)
+
+      this.forwardStack = []
+      return this.backStack.unshift(nv)
+    }
   }
 }
 </script>
@@ -444,6 +489,16 @@ export default {
       }
     }
   }
+
+  /deep/ .router {
+    margin-left: 20px;
+    .btn {
+      line-height: 0;
+      background-color: @primaryColor;
+      color: white;
+    }
+  }
+
   .search-dropdown-menu {
     position: absolute;
     top: 65px;
