@@ -1,6 +1,7 @@
 <template>
-  <div class="audio-control-container">
+  <div class="audio-control-container" @keyup="keyOperation">
     <div class="audio">
+      <div class="play-mask" v-show="playMask"></div>
       <audio-player
         ref="audioPlayer"
         :audio-list="audioList.map(elm => elm.url)"
@@ -66,11 +67,17 @@ export default {
       lastUrl: localStorage.getItem('url'),
       autoPlay: false, //用于防止一开始就播放
       volumeTime: 0, //记录声音缓动的计时器
-      playPause: true
+      playMask: false //用于播放防抖的遮罩
     }
   },
   methods: {
     rotate() {
+      //播放暂停防抖
+      this.playMask = true
+      setTimeout(() => {
+        this.playMask = false
+      }, 500)
+
       if (this.$route.path == '/play') bus.$emit('changeRotate', 1)
 
       let tempVolume = this.volume
@@ -105,6 +112,12 @@ export default {
       }, 1000)
     },
     stop_rotate() {
+      //播放暂停防抖
+      this.playMask = true
+      setTimeout(() => {
+        this.playMask = false
+      }, 500)
+
       var audio = document.querySelector('.audio-player__audio')
       audio.play()
 
@@ -175,6 +188,11 @@ export default {
       } else {
         console.log('err')
       }
+    },
+    //监听键盘事件
+    keyOperation(e) {
+      console.log(1)
+      console.log(e)
     }
   },
   created() {},
@@ -257,6 +275,17 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+    .play-mask {
+      float: left;
+      position: absolute;
+      top: 0px;
+      left: 230px;
+      width: 42px;
+      height: 42px;
+      background-color: transparent;
+      // background-color: pink;
+      z-index: 10000;
+    }
     /deep/ .audio-player {
       .audio__btn-wrap {
         margin-bottom: 0;

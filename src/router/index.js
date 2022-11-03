@@ -22,6 +22,8 @@ import Podcast from '@/views/Index/MyMusic/Podcast'
 import Collection from '@/views/Index/MyMusic/Collection'
 
 import Song from '@/views/Index/Search/Song'
+import Artist from '@/views/Index/Search/Artist'
+import Album from '@/views/Index/Search/Album'
 
 Vue.use(VueRouter)
 let originPush = VueRouter.prototype.push
@@ -108,7 +110,11 @@ export default new VueRouter({
           component: Search,
           redirect: 'search/song',
           name: 'search',
-          children: [{ path: 'song/:keyword?', component: Song, name: 'song' }]
+          children: [
+            { path: 'song/:keyword?', component: Song, name: 'song' },
+            { path: 'artist/:keyword?', component: Artist, name: 'artist' },
+            { path: 'album/:keyword?', component: Album, name: 'album' }
+          ]
         }
       ]
     },
