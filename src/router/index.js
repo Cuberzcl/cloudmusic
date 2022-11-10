@@ -6,6 +6,7 @@ import BaseFunc from '@/views/Index/BaseFunc'
 import MyMusic from '@/views/Index/MyMusic'
 import Search from '@/views/Index/Search'
 import Play from '@/views/Play'
+import UpdateLog from '@/views/Index/UpdateLog'
 
 import FindMusic from '@/views/Index/BaseFunc/FindMusic'
 import Blog from '@/views/Index/BaseFunc/Blog'
@@ -115,7 +116,8 @@ export default new VueRouter({
             { path: 'artist/:keyword?', component: Artist, name: 'artist' },
             { path: 'album/:keyword?', component: Album, name: 'album' }
           ]
-        }
+        },
+        { path: 'updatelog', component: UpdateLog, name: 'update_log' }
       ]
     },
     { path: '/play', component: Play, name: 'play' }

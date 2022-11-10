@@ -24,6 +24,7 @@
         circle
         :disabled="backStack.length == 1"
         @click="goBack"
+        title="后退"
       ></el-button>
       <el-button
         icon="el-icon-arrow-right "
@@ -32,6 +33,7 @@
         circle
         :disabled="forwardStack.length == 0"
         @click="goForward"
+        title="前进"
       ></el-button
     ></el-row>
     <transition name="search-dropdown-menu">
@@ -188,7 +190,7 @@
           <li class="el-icon-brush menu-item" title="皮肤" @click="skinItemClick"></li>
           <li class="el-icon-message menu-item" title="消息"></li>
           <li class="el-icon-setting menu-item" title="设置"></li>
-          <li class="el-icon-document menu-item" title="日志"></li>
+          <li class="el-icon-document menu-item" title="日志" @click="goToLog"></li>
         </ul>
       </div>
       <!-- 皮肤板块 -->
@@ -401,6 +403,12 @@ export default {
     skinItemClick() {
       if (this.skin == false) this.skin = true
       // this.skin = !this.skin
+    },
+    //跳转到更新日志界面
+    goToLog() {
+      if (this.$route.path != '/index/updatelog') {
+        this.$router.push({ name: 'update_log' })
+      }
     }
   },
   created() {

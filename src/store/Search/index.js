@@ -42,9 +42,9 @@ const mutations = {
 }
 
 const actions = {
-  async getSearchRes({ commit }, { searchInput }) {
+  async getSearchRes({ commit }, { searchInput }, type) {
     commit('ClEARSEARCHRES')
-    let { data: res } = await get_search_res({ keywords: searchInput })
+    let { data: res } = await get_search_res({ keywords: searchInput, type: type || 1 })
     if (res.code === 200) {
       // this.searchResult = res.result
       commit('GETSEARCHRES', res.result)
