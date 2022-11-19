@@ -12,6 +12,7 @@
         </div>
         <PlaySongInfoVue :songData="songData" class="info"></PlaySongInfoVue>
         <LyricsVue :lyrics="lyrics" :index="index" class="lyrics"></LyricsVue>
+        <CommentsVue :comments="comments" class="comments"></CommentsVue>
       </div>
     </transition>
   </div>
@@ -22,6 +23,7 @@ import { mapState } from 'vuex'
 import bus from '@/EventBus'
 import PlaySongInfoVue from './PlaySongInfo'
 import LyricsVue from './Lyrics'
+import CommentsVue from './Comments'
 
 export default {
   name: 'PlayVue',
@@ -40,7 +42,8 @@ export default {
   },
   components: {
     PlaySongInfoVue,
-    LyricsVue
+    LyricsVue,
+    CommentsVue
   },
   methods: {
     //图片旋转
@@ -76,6 +79,9 @@ export default {
         if (tempArr.length > 1)
           tempArr[tempArr.length - 1].time = tempArr[tempArr.length - 2].time + 100
         return tempArr
+      },
+      comments: state => {
+        return { hotComments: state.play.hotComments, comments: state.play.comments }
       }
     })
   },
@@ -136,6 +142,7 @@ export default {
       this.showPlay = true
     })
 
+    bus.$off('goPrev')
     bus.$on('goPrev', () => {
       this.showPlay = false
     })

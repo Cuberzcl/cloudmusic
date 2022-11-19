@@ -40,6 +40,9 @@ export default {
   },
   methods: {
     enter() {
+      /**刷新时防止停在某些页面且缺失数据，导致报错 */
+      this.$router.replace('/index')
+
       this.welcome = false
       bus.$emit('prePlay')
     }

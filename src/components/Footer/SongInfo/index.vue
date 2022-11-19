@@ -133,12 +133,16 @@ export default {
     }
   },
   methods: {
+    /**跳转到Play页面或从其返回 */
     changeRouter() {
       if (this.$route.path != '/play') {
         this.$router.push('/play')
         this.$nextTick(() => {
           bus.$emit('songInfo', this.songData)
         })
+
+        /**获取歌曲评论 */
+        this.$store.dispatch('getSongComments', { id: this.songData.id })
       } else {
         bus.$emit('stopPlayRotate')
         bus.$emit('goPrev')
