@@ -11,7 +11,8 @@ module.exports = defineConfig({
         path.resolve(__dirname, './public/global.less')
       ]
     }
-  }
+  },
+  publicPath: './'
 
   // devServer: {
   //   proxy: {

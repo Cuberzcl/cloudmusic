@@ -17,7 +17,7 @@
           <p class="songName" @click="changeRouter()">
             {{ songData.name }}
           </p>
-          <div class="little-like" v-if="songData">
+          <div class="little-like" v-if="songData.name">
             <span
               @click="like"
               title="喜欢"
@@ -189,6 +189,7 @@ export default {
       cursor: pointer;
       .mask {
         display: block;
+        backdrop-filter: blur(2px);
       }
     }
     img {

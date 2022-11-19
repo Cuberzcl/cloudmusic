@@ -6,11 +6,12 @@
     <div id="search-input" @keyup.enter="sendSearchInput">
       <el-input
         :data-nothide="1"
-        placeholder="请输入内容"
+        placeholder='请输入内容（按"/"快速搜索）'
         prefix-icon="el-icon-search"
         v-model="searchInput"
         size="mini"
         @focus="inputFocus"
+        @blur="addKeyEvent"
         @input="getSearchSuggest"
         ref="input"
       >
@@ -230,6 +231,27 @@ export default {
   },
   components: { SkinVue },
   methods: {
+    //添加键盘事件
+    addKeyEvent() {
+      window.addEventListener('keyup', this.keyEventFunc)
+    },
+    //鼠标监听事件函数
+    keyEventFunc(e) {
+      switch (e.key) {
+        case '/': {
+          this.$refs.input.focus()
+          break
+        }
+        case ' ':
+        case 'ArrowUp':
+        case 'ArrowDown':
+        case 'ArrowLeft':
+        case 'ArrowRight': {
+          bus.$emit('controlMusic', e.key)
+          break
+        }
+      }
+    },
     sendSearchInput() {
       this.searchDropdown = false
       this.$refs.input.blur()
@@ -279,6 +301,9 @@ export default {
     },
     //搜索框获取焦点时
     inputFocus() {
+      /**去除键盘监听事件 */
+      window.removeEventListener('keyup', this.keyEventFunc)
+
       //重置查看全部
       if (this.showAll) {
         this.all = false
@@ -413,6 +438,7 @@ export default {
   },
   created() {
     this.getHistory()
+    this.addKeyEvent()
   },
   mounted() {
     let searchIcon = document.querySelector('.el-icon-search')

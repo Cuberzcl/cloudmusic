@@ -1,5 +1,5 @@
 <template>
-  <div class="audio-control-container" @keyup="keyOperation">
+  <div class="audio-control-container">
     <div class="audio">
       <div class="play-mask" v-show="playMask"></div>
       <audio-player
@@ -67,6 +67,7 @@ export default {
       lastUrl: localStorage.getItem('url'),
       autoPlay: false, //用于防止一开始就播放
       volumeTime: 0, //记录声音缓动的计时器
+      tempVolume: this.volume, //声音渐变时临时记录目标音量
       playMask: false //用于播放防抖的遮罩
     }
   },
@@ -74,22 +75,24 @@ export default {
     rotate() {
       //播放暂停防抖
       this.playMask = true
+      clearInterval(this.volumeTime)
       setTimeout(() => {
         this.playMask = false
-      }, 500)
+      }, 1000)
 
       if (this.$route.path == '/play') bus.$emit('changeRotate', 1)
 
-      let tempVolume = this.volume
-      if (tempVolume !== 0) {
+      this.tempVolume = this.volume
+      if (this.tempVolume !== 0) {
         this.volume = 1
         this.volumeTime = setInterval(() => {
           this.volume += 1
-        }, 1000 / tempVolume)
+        }, 1000 / this.tempVolume)
 
         setTimeout(() => {
-          this.volume = tempVolume
+          this.volume = this.tempVolume
           clearInterval(this.volumeTime)
+          this.volumeTime = -1
         }, 1000)
       }
 
@@ -114,26 +117,28 @@ export default {
     stop_rotate() {
       //播放暂停防抖
       this.playMask = true
+      clearInterval(this.volumeTime)
       setTimeout(() => {
         this.playMask = false
-      }, 500)
+      }, 1000)
 
       var audio = document.querySelector('.audio-player__audio')
       audio.play()
 
-      let tempVolume = this.volume
+      this.tempVolume = this.volume
       this.volumeTime = setInterval(() => {
         this.volume -= 1
         if (this.volume < 5) {
           clearInterval(this.volumeTime)
-          this.volumeTime = 1
+          this.volumeTime = -1
         }
-      }, 1000 / tempVolume)
+      }, 1000 / this.tempVolume)
 
       setTimeout(() => {
         audio.pause()
-        this.volume = tempVolume
-        if (this.volumeTime !== -1) clearInterval(this.volumeTime)
+        this.volume = this.tempVolume
+        if (this.volumeTime != -1) clearInterval(this.volumeTime)
+        this.volumeTime = -1
       }, 1000)
 
       if (this.$route.path == '/play') bus.$emit('changeRotate', 0)
@@ -188,11 +193,6 @@ export default {
       } else {
         console.log('err')
       }
-    },
-    //监听键盘事件
-    keyOperation(e) {
-      console.log(1)
-      console.log(e)
     }
   },
   created() {},
@@ -250,6 +250,44 @@ export default {
       audio.currentTime = val
       this.$refs.audioPlayer.play()
     })
+
+    /**监听键盘事件 */
+    bus.$on('controlMusic', val => {
+      let audio = document.querySelector('.audio-player__audio')
+      switch (val) {
+        case ' ': {
+          if (!this.playMask)
+            this.$refs.audioPlayer.isPlaying
+              ? this.$refs.audioPlayer.pause()
+              : this.$refs.audioPlayer.play()
+          break
+        }
+        case 'ArrowUp': {
+          if (this.volume <= 90) this.volume += 10
+          else this.volume = 100
+          break
+        }
+        case 'ArrowDown': {
+          if (this.volume >= 10) this.volume -= 10
+          else this.volume = 0
+          break
+        }
+        case 'ArrowLeft': {
+          if (this.$refs.audioPlayer.isPlaying) {
+            if (audio.currentTime >= 5) audio.currentTime -= 5
+            else audio.currentTime = 0
+          }
+          break
+        }
+        case 'ArrowRight': {
+          if (this.$refs.audioPlayer.isPlaying) {
+            if (audio.currentTime <= audio.duration - 5) audio.currentTime += 5
+            else audio.currentTime = audio.duration
+          }
+          break
+        }
+      }
+    })
   },
   watch: {
     //监听音量变化
@@ -268,7 +306,6 @@ export default {
   left: 50%;
   top: 3px;
   transform: translateX(-50%);
-  // background-color: pink;
   text-align: center;
 
   .audio {
@@ -278,7 +315,7 @@ export default {
     .play-mask {
       float: left;
       position: absolute;
-      top: 0px;
+      top: -4px;
       left: 230px;
       width: 42px;
       height: 42px;
@@ -289,7 +326,7 @@ export default {
     /deep/ .audio-player {
       .audio__btn-wrap {
         margin-bottom: 0;
-        // .audio__play-icon {
+        height: 32.36px;
         .audio__play-volume-wrap {
           margin-bottom: 10px;
           height: 100px;
