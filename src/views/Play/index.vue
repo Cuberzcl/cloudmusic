@@ -81,7 +81,11 @@ export default {
         return tempArr
       },
       comments: state => {
-        return { hotComments: state.play.hotComments, comments: state.play.comments }
+        return {
+          hotComments: state.play.hotComments,
+          comments: state.play.comments,
+          total: state.play.total
+        }
       }
     })
   },
@@ -161,10 +165,12 @@ export default {
   order: 2;
   height: 800px;
   .show {
+    overflow: auto;
+    .myScroller(@primaryColorDarken);
+
     height: 100%;
     width: 100%;
     position: absolute;
-    overflow: hidden;
     background: linear-gradient(to bottom right, #ffeeff, #ffffee, #eeffff);
 
     .arm {
@@ -225,7 +231,8 @@ export default {
       width: 600px;
       margin: 0 auto;
     }
-    .lyrics {
+    .lyrics,
+    .comments {
       margin: 0 auto;
     }
   }

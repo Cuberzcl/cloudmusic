@@ -3,7 +3,8 @@ import { get_song_lyrics, get_song_comments } from '@/api'
 const state = {
   lirics: '还没有找到歌词~',
   hotComments: [], //热门评论
-  comments: [] //所有评论
+  comments: [], //所有评论
+  total: 0 //评论总数量
 }
 
 const mutations = {
@@ -15,6 +16,7 @@ const mutations = {
   GETSONGCOMMENTS(state, res) {
     state.hotComments = res.hotComments
     state.comments = res.comments
+    state.total = res.total
   }
 }
 
