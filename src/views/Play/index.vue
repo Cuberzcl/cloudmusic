@@ -1,7 +1,7 @@
 <template>
   <div class="play-container">
     <transition name="show">
-      <div class="show" v-if="showPlay">
+      <div class="show" v-if="showPlay" @scroll="playScroll">
         <div class="arm" ref="arm" :class="{ 'arm-rotate': armRotate }">
           <img src="@/assets/唱臂.png" />
         </div>
@@ -62,6 +62,10 @@ export default {
     stopRotate() {
       this.armRotate = false
       clearInterval(this.time)
+    },
+    /**Play页面滚动 */
+    playScroll() {
+      this.$children[1].pointer = false
     }
   },
   computed: {

@@ -80,6 +80,7 @@ export default {
         this.pointer = false
         this.scrollChange = false
         var ls = this.$refs.lyrics.querySelectorAll('p')[this.index]
+        if (!ls) return
         var scrollY = ls.offsetTop
 
         this.changeScrollIndexLive = false
@@ -148,7 +149,7 @@ export default {
 .lyrics-container {
   margin-top: 5px;
   width: 50%;
-  height: 55%;
+  height: 50%;
   overflow: auto;
   text-align: center;
 
@@ -230,7 +231,7 @@ export default {
     width: 50%;
     margin: 0 auto;
     position: absolute;
-    bottom: 240px;
+    bottom: 260px;
     border-bottom: 0.5px dotted #000;
     border-image: linear-gradient(
         to left,

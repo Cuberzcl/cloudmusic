@@ -1,7 +1,7 @@
 <template>
   <div id="comments-container">
     <div class="hotComments">
-      <h2 class="title">全部评论({{ comments.total }})</h2>
+      <h3 class="title">全部评论({{ comments.total }})</h3>
       <CommentsListVue :comments="comments.hotComments"></CommentsListVue>
     </div>
   </div>

@@ -48,7 +48,6 @@
 
 <script>
 import bus from '@/EventBus'
-import axios from 'axios'
 import { get_song_url } from '@/api'
 export default {
   name: 'AudioControlVue',
@@ -222,21 +221,11 @@ export default {
     let songData = localStorage.getItem('songData')
     if (songData) {
       this.songData = JSON.parse(songData)
-      if (this.lastUrl == '') {
-        this.getSongUrl(this.songData.id)
-        return
-      }
-      axios
-        .head(this.lastUrl)
-        .then(() => {
-          this.audioList[0].url = this.lastUrl
-          this.lastSong()
-        })
-        .catch(() => {
-          this.getSongUrl(this.songData.id)
-        })
+      this.audioList[0].url = this.lastUrl
+      this.getSongUrl(this.songData.id)
     }
 
+    bus.$off('playAudio')
     bus.$on('playAudio', val => {
       this.audioList[0].url = val
       localStorage.setItem('url', val)
@@ -244,6 +233,8 @@ export default {
         this.$refs.audioPlayer.play()
       }, 100)
     })
+
+    bus.$off('changeSongTime')
     bus.$on('changeSongTime', val => {
       var audio = document.querySelector('.audio-player__audio')
       audio.load()
@@ -252,6 +243,7 @@ export default {
     })
 
     /**监听键盘事件 */
+    bus.$off('controlMusic')
     bus.$on('controlMusic', val => {
       let audio = document.querySelector('.audio-player__audio')
       switch (val) {
@@ -288,6 +280,8 @@ export default {
         }
       }
     })
+
+    /**为按键赋值 title属性 */
   },
   watch: {
     //监听音量变化

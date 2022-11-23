@@ -16,3 +16,6 @@ export const get_song_lyrics = params => _request({ url: '/lyric', method: 'get'
 //依据歌曲id请求评论
 export const get_song_comments = params =>
   _request({ url: '/comment/music', method: 'get', params })
+
+/**获取轮播图数据 */
+export const get_banners = params => _request({ url: '/banner', method: 'get', params })
