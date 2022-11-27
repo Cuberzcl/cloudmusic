@@ -43,13 +43,37 @@ const mutations = {
 
 const actions = {
   async getSearchRes({ commit }, { searchInput }, type) {
+    /**核查搜索结果与类型 */
+    let lastSearchInput = sessionStorage.getItem('searchInput')
+    let searchType = sessionStorage.getItem('searchType')
+    // let searchResultAlive = sessionStorage.getItem('searchResult')
+    if ((!type && !searchType) || parseInt(searchType) == type) {
+      if (lastSearchInput && state.searchResult[0]) {
+        if (lastSearchInput == searchInput) {
+          return
+        }
+      }
+    }
+
     commit('ClEARSEARCHRES')
     let { data: res } = await get_search_res({ keywords: searchInput, type: type || 1 })
     if (res.code === 200) {
-      // this.searchResult = res.result
-      commit('GETSEARCHRES', res.result)
+      let result = res.result.songs
+      /**解构，除去不必要的属性 */
+      if (!type || type == 1) {
+        result = result.map(({ name, id, ar, al, dt }) => ({ name, id, ar, al, dt }))
+      }
+      /**
+       * else { }
+       * */
+
+      commit('GETSEARCHRES', result)
+
+      /**暂存搜索内容、搜索类型 */
+      sessionStorage.setItem('searchInput', searchInput)
+      if (type) sessionStorage.setItem('searchType', type)
     } else {
-      console.log('err')
+      console.log('search err')
     }
   },
   async getSongUrl({ commit }, { id }) {

@@ -447,10 +447,6 @@ export default {
     searchIcon.addEventListener('click', () => {
       this.sendSearchInput()
     })
-
-    let header = document.querySelector('#header-container')
-    //禁止复制
-    header.onselectstart = () => false
   },
   watch: {
     //监测路由路径变化，更新backStack和forwardStack，用于配合前进后退

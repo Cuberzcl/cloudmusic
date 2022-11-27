@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+/**一级组件 */
 import Index from '@/views/Index'
 import BaseFunc from '@/views/Index/BaseFunc'
 import MyMusic from '@/views/Index/MyMusic'
@@ -8,6 +9,7 @@ import Search from '@/views/Index/Search'
 import Play from '@/views/Play'
 import UpdateLog from '@/views/Index/UpdateLog'
 
+/** BaseFunc子组件 */
 import FindMusic from '@/views/Index/BaseFunc/FindMusic'
 import Blog from '@/views/Index/BaseFunc/Blog'
 import Video from '@/views/Index/BaseFunc/Video'
@@ -15,6 +17,7 @@ import Subscription from '@/views/Index/BaseFunc/Subscription'
 import Live from '@/views/Index/BaseFunc/Live'
 import FM from '@/views/Index/BaseFunc/FM'
 
+/** MyMusic子组件 */
 import Like from '@/views/Index/MyMusic/Like'
 import Saved from '@/views/Index/MyMusic/Saved'
 import Recent from '@/views/Index/MyMusic/Recent'
@@ -22,9 +25,18 @@ import Cloud from '@/views/Index/MyMusic/Cloud'
 import Podcast from '@/views/Index/MyMusic/Podcast'
 import Collection from '@/views/Index/MyMusic/Collection'
 
+/** Search子组件 */
 import Song from '@/views/Index/Search/Song'
 import Artist from '@/views/Index/Search/Artist'
 import Album from '@/views/Index/Search/Album'
+
+/** FindMusic子组件 */
+import Recommend from '@/views/Index/BaseFunc/FindMusic/Recommend'
+import CustomMade from '@/views/Index/BaseFunc/FindMusic/CustomMade'
+import SongListInFindMusic from '@/views/Index/BaseFunc/FindMusic/SongList'
+import Rank from '@/views/Index/BaseFunc/FindMusic/Rank'
+import ArtistInFindMusic from '@/views/Index/BaseFunc/FindMusic/Artist'
+import LatestMusic from '@/views/Index/BaseFunc/FindMusic/LatestMusic'
 
 Vue.use(VueRouter)
 let originPush = VueRouter.prototype.push
@@ -70,7 +82,46 @@ export default new VueRouter({
           redirect: 'basefunc/findmusic',
           name: 'base_func',
           children: [
-            { path: 'findmusic', component: FindMusic, name: 'find_music', meta: { baseIndex: 0 } },
+            {
+              path: 'findmusic',
+              component: FindMusic,
+              name: 'find_music',
+              meta: { baseIndex: 0 },
+              redirect: 'findmusic/recommend',
+              children: [
+                {
+                  path: 'recommend',
+                  component: Recommend,
+                  name: 'recommend',
+                  meta: { tabIndex: 0 }
+                },
+                {
+                  path: 'custommade',
+                  component: CustomMade,
+                  name: 'custom_made',
+                  meta: { tabIndex: 1 }
+                },
+                {
+                  path: 'songlist',
+                  component: SongListInFindMusic,
+                  name: 'song_list',
+                  meta: { tabIndex: 2 }
+                },
+                { path: 'rank', component: Rank, name: 'rank', meta: { tabIndex: 3 } },
+                {
+                  path: 'artist',
+                  component: ArtistInFindMusic,
+                  name: 'artist_in_find_music',
+                  meta: { tabIndex: 4 }
+                },
+                {
+                  path: 'latestmusic',
+                  component: LatestMusic,
+                  name: 'latest_music',
+                  meta: { tabIndex: 5 }
+                }
+              ]
+            },
             { path: 'blog', component: Blog, name: 'blog', meta: { baseIndex: 1 } },
             { path: 'video', component: Video, name: 'video', meta: { baseIndex: 2 } },
             {

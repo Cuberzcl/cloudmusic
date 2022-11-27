@@ -10,7 +10,7 @@ export default {
   name: 'SongVue',
   computed: {
     ...mapState({
-      songsList: state => state.search.searchResult.songs,
+      songsList: state => state.search.searchResult,
       audioList: state => state.search.audioList
     })
   }

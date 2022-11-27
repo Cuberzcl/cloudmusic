@@ -170,6 +170,15 @@ export default {
       localStorage.setItem('likes', JSON.stringify(this.likes))
       bus.$emit('updateLikes')
     }
+  },
+  watch: {
+    songData(nD, oD) {
+      if (!oD.id) {
+        sessionStorage.setItem('songId', nD.id)
+      } else {
+        sessionStorage.setItem('songId', oD.id)
+      }
+    }
   }
 }
 </script>
@@ -210,7 +219,8 @@ export default {
       text-align: center;
       line-height: 50px;
       i {
-        color: #fff;
+        color: @primaryColor;
+        font-weight: bold;
         font-size: 20px;
       }
     }

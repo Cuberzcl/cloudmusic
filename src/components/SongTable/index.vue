@@ -92,6 +92,7 @@ export default {
 
       let item = this.songsList[index]
       let data = { name: item.name, id: item.id, ar: item.ar, al: item.al, dt: item.dt }
+      sessionStorage.setItem('songData', JSON.stringify(data))
       bus.$emit('showSongInfo', data)
       bus.rad = 0 //换歌时唱片旋转为0
     },

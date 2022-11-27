@@ -48,6 +48,9 @@ export default {
     }
   },
   created() {
+    /**清空session */
+    sessionStorage.clear()
+
     let primaryColor = localStorage.getItem('primaryColor')
     let theme = localStorage.getItem('theme')
     if (theme) {
@@ -75,6 +78,9 @@ export default {
       this.Global.changeProportion(w, h)
       this.key = 1 - this.key
     })
+
+    //禁止复制
+    window.onselectstart = () => false
   }
 }
 </script>

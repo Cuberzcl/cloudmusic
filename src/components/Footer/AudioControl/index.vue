@@ -1,5 +1,5 @@
 <template>
-  <div class="audio-control-container">
+  <div class="audio-control-container" v-if="songData">
     <div class="audio">
       <div class="play-mask" v-show="playMask"></div>
       <audio-player

@@ -1,72 +1,83 @@
 <template>
   <div id="find-music-container">
-    <!-- 轮播图  -->
-    <el-carousel :interval="4000" type="card" height="200px" v-if="bannerShow">
-      <el-carousel-item v-for="(item, index) in banners" :key="index">
-        <img :src="item.imageUrl" alt=""
-      /></el-carousel-item>
-    </el-carousel>
+    <!-- 标签页 -->
+    <div class="tabs">
+      <ul>
+        <li
+          v-for="(item, index) in tabs"
+          :key="index"
+          :data-routeName="item.routeName"
+          :class="{ selected: index == tabIndex }"
+          @click="changeTabIndex(index)"
+        >
+          <i></i>
+          {{ item.name }}
+        </li>
+      </ul>
+    </div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import { get_banners } from '@/api'
 export default {
   name: 'FindMusicVue',
   data() {
     return {
-      banners: [],
-      bannerShow: false
+      tabIndex: this.$route.meta.tabIndex, //选中的标签序号
+      tabs: [
+        { name: '个性推荐', routeName: 'recommend' },
+        { name: '专属定制', routeName: 'custom_made' },
+        { name: '歌单', routeName: 'song_list' },
+        { name: '排行榜', routeName: 'rank' },
+        { name: '歌手', routeName: 'artist_in_find_music' },
+        { name: '最新音乐', routeName: 'latest_music' }
+      ]
     }
   },
   methods: {
-    /**获取banners */
-    async getBanners() {
-      let { data: res } = await get_banners()
-      if (res.code === 200) {
-        this.banners = res.banners
-        sessionStorage.setItem('banners', JSON.stringify(this.banners))
-      } else {
-        console.log('err')
-      }
+    /**改变标签页序号并跳转路由 */
+    changeTabIndex(index) {
+      this.$router.push({ name: this.tabs[index].routeName })
     }
   },
-  created() {
-    let banners = sessionStorage.getItem('banners')
-    if (banners) {
-      this.banners = JSON.parse(banners)
-    } else this.getBanners()
-    this.$nextTick(() => {
-      this.bannerShow = true
-    })
-  }
+  created() {}
 }
 </script>
 
 <style lang="less" scoped>
 #find-music-container {
-  /deep/ .el-carousel {
-    width: 1080px;
-    margin: 50px auto;
-    button {
+  .tabs {
+    margin-top: 20px;
+    margin-left: 20px;
+    .selected {
+      font-size: 28px;
+      font-weight: bolder;
       i {
-        font-weight: bold;
+        border-bottom: 5px solid @primaryColor;
       }
     }
-
-    .el-carousel__item {
-      border-radius: 20px !important;
-      width: 540px;
-
-      img {
-        width: 100%;
+    li {
+      display: inline-block;
+      margin: 0 15px;
+      height: 60px;
+      line-height: 60px;
+      font-size: 24px;
+      text-align: center;
+      position: relative;
+      font-family: @primaryFontFamily;
+      cursor: pointer;
+      i {
+        position: absolute;
+        top: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: inline-block;
+        height: 60px;
+        width: 90%;
+        border-radius: 15px;
+        z-index: -1;
       }
-    }
-    .el-carousel__mask {
-      border-radius: 20px;
-    }
-    .el-carousel__indicators--outside button {
-      background-color: @primaryColor !important;
     }
   }
 }
